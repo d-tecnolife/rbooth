@@ -1,0 +1,104 @@
+{
+  "events": [
+    {
+      "code": "demo",
+      "created_at": "2026-03-23T15:43:57.803143368Z"
+    },
+    {
+      "code": "main-board",
+      "created_at": "2026-03-23T16:00:48.555289933Z"
+    }
+  ],
+  "photos": [
+    {
+      "id": "20260323154803-hwh7i",
+      "event_code": "demo",
+      "filename": "20260323154803-hwh7i.jpg",
+      "caption": "SmokeTest",
+      "created_at": "2026-03-23T15:48:03.779177984Z",
+      "display_url": "/media/demo/20260323154803-hwh7i.jpg",
+      "filter_label": "neutral/sunrise"
+    },
+    {
+      "id": "sample-01",
+      "event_code": "main-board",
+      "filename": "sample-daisy-lane.jpg",
+      "caption": "Daisy lane",
+      "created_at": "2026-03-23T16:00:40.499581913Z",
+      "display_url": "/media/main-board/sample-daisy-lane.jpg",
+      "filter_label": "warm/sunrise"
+    },
+    {
+      "id": "sample-02",
+      "event_code": "main-board",
+      "filename": "sample-soft-lights.jpg",
+      "caption": "Soft lights",
+      "created_at": "2026-03-23T16:01:40.526517812Z",
+      "display_url": "/media/main-board/sample-soft-lights.jpg",
+      "filter_label": "party/paper"
+    },
+    {
+      "id": "20260323160212-uglkm",
+      "event_code": "main-board",
+      "filename": "20260323160212-uglkm.jpg",
+      "caption": "SingleBoardTest",
+      "created_at": "2026-03-23T16:02:12.223904637Z",
+      "display_url": "/media/main-board/20260323160212-uglkm.jpg",
+      "filter_label": "warm/mint"
+    },
+    {
+      "id": "sample-03",
+      "event_code": "main-board",
+      "filename": "sample-cotton-candy.jpg",
+      "caption": "Cotton candy",
+      "created_at": "2026-03-23T16:02:40.551571883Z",
+      "display_url": "/media/main-board/sample-cotton-candy.jpg",
+      "filter_label": "warm/mint"
+    },
+    {
+      "id": "sample-04",
+      "event_code": "main-board",
+      "filename": "sample-sparkle-hour.jpg",
+      "caption": "Sparkle hour",
+      "created_at": "2026-03-23T16:03:40.577354758Z",
+      "display_url": "/media/main-board/sample-sparkle-hour.jpg",
+      "filter_label": "neutral/sunrise"
+    },
+    {
+      "id": "sample-05",
+      "event_code": "main-board",
+      "filename": "sample-bloom-room.jpg",
+      "caption": "Bloom room",
+      "created_at": "2026-03-23T16:04:40.602770438Z",
+      "display_url": "/media/main-board/sample-bloom-room.jpg",
+      "filter_label": "cool/mint"
+    },
+    {
+      "id": "sample-06",
+      "event_code": "main-board",
+      "filename": "sample-ribbon-night.jpg",
+      "caption": "Ribbon night",
+      "created_at": "2026-03-23T16:05:40.628403694Z",
+      "display_url": "/media/main-board/sample-ribbon-night.jpg",
+      "filter_label": "cool/night"
+    },
+    {
+      "id": "sample-07",
+      "event_code": "main-board",
+      "filename": "sample-rosy-pop.jpg",
+      "caption": "Rosy pop",
+      "created_at": "2026-03-23T16:06:40.655822833Z",
+      "display_url": "/media/main-board/sample-rosy-pop.jpg",
+      "filter_label": "party/sunrise"
+    },
+    {
+      "id": "sample-08",
+      "event_code": "main-board",
+      "filename": "sample-dream-club.jpg",
+      "caption": "Dream club",
+      "created_at": "2026-03-23T16:07:40.680874155Z",
+      "display_url": "/media/main-board/sample-dream-club.jpg",
+      "filter_label": "neutral/paper"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{{ define "home" }}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<main class="shell shell-home">
+  <section class="hero">
+    <p class="eyebrow">Browser-only photo booth</p>
+    <h1>rbooth</h1>
+    <p class="lede">Create an event, put the board on a shared screen, and let guests join instantly by scanning a QR code in their browser.</p>
+
+    <form class="card create-form" method="post" action="/events">
+      <label for="code">Event code</label>
+      <div class="row">
+        <input id="code" name="code" type="text" value="{{ .DefaultCode }}" maxlength="24" autocomplete="off">
+        <button type="submit">Create booth</button>
+      </div>
+      <p class="hint">Use letters, numbers, and dashes only.</p>
+    </form>
+  </section>
+
+  <section class="event-list">
+    <div class="section-head">
+      <h2>Recent events</h2>
+      <a href="/admin/demo">Open demo</a>
+    </div>
+
+    {{ if .Events }}
+    <div class="grid cards">
+      {{ range .Events }}
+      <article class="card event-card">
+        <h3>{{ .Code }}</h3>
+        <p>Created {{ .CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
+        <div class="actions">
+          <a href="/admin/{{ .Code }}">Admin</a>
+          <a href="/join/{{ .Code }}">Join</a>
+          <a href="/board/{{ .Code }}">Board</a>
+        </div>
+      </article>
+      {{ end }}
+    </div>
+    {{ else }}
+    <p class="card empty">No events yet.</p>
+    {{ end }}
+  </section>
+</main>
+</body>
+</html>
+{{ end }}

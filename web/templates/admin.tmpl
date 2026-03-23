@@ -1,0 +1,67 @@
+{{ define "admin" }}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<main class="shell shell-admin">
+  <section class="admin-header">
+    <div>
+      <p class="eyebrow">Booth controls</p>
+      <h1>Share the moment</h1>
+      <p>Keep this page nearby for the QR code and quick links while everyone adds photos from their browser.</p>
+    </div>
+    <div class="actions">
+      <a class="button-link" href="/join">Open camera page</a>
+      <a class="button-link" href="/">Open photo wall</a>
+    </div>
+  </section>
+
+  <section class="admin-grid">
+    <article class="card info-card">
+      <h2>QR and links</h2>
+      <img class="qr-image" src="/qr" alt="QR code for the shared board join page">
+      <label>
+        Join URL
+        <input type="text" value="{{ .JoinURL }}" readonly>
+      </label>
+      <label>
+        Board URL
+        <input type="text" value="{{ .BoardURL }}" readonly>
+      </label>
+    </article>
+
+    <article class="card info-card">
+      <h2>Quick snapshot</h2>
+      <p><strong>Started:</strong> {{ .Event.CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
+      <p><strong>Photos on wall:</strong> {{ len .Photos }}</p>
+      <p><strong>Guest flow:</strong> Scan, snap, style, publish.</p>
+      <p><strong>Tip:</strong> Keep the wall open on a bigger screen for the best effect.</p>
+    </article>
+  </section>
+
+  <section class="gallery-strip">
+    <div class="section-head">
+      <h2>Latest uploads</h2>
+    </div>
+    <div class="grid cards">
+      {{ range .Photos }}
+      <article class="card thumb-card">
+        <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
+        <p>{{ if .Caption }}{{ .Caption }}{{ else }}Untitled photo{{ end }}</p>
+      </article>
+      {{ else }}
+      <article class="card empty">
+        <p>No photos yet. Open the camera page on a phone and publish one.</p>
+      </article>
+      {{ end }}
+    </div>
+  </section>
+</main>
+ </body>
+ </html>
+{{ end }}

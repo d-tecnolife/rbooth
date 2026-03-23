@@ -1,0 +1,104 @@
+{{ define "join" }}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<main class="shell shell-join">
+  <section class="join-header">
+    <p class="eyebrow">Join the booth</p>
+    <h1>Step in and snap</h1>
+    <p>Open the camera, tune the mood, and send your picture straight to the wall without downloading anything.</p>
+    <div class="board-chips">
+      <span>1. Capture</span>
+      <span>2. Style</span>
+      <span>3. Pin it</span>
+    </div>
+    <div class="board-links">
+      <a href="/">View photo wall</a>
+      <a href="/admin">Admin</a>
+    </div>
+  </section>
+
+  <section class="join-layout">
+    <div class="card preview-card">
+      <div class="camera-stack">
+        <video id="camera" autoplay playsinline muted></video>
+        <canvas id="preview" width="1080" height="1080" hidden></canvas>
+        <div id="previewFrame" class="preview-frame" hidden></div>
+      </div>
+
+      <div class="capture-actions">
+        <button id="startCamera" type="button">Enable camera</button>
+        <button id="capturePhoto" type="button" disabled>Capture</button>
+        <button id="retakePhoto" type="button" disabled>Retake</button>
+        <label class="upload-fallback">
+          <span>Upload file</span>
+          <input id="uploadInput" type="file" accept="image/*">
+        </label>
+      </div>
+    </div>
+
+    <form id="uploadForm" class="card controls-card">
+      <h2>Style</h2>
+
+      <label>
+        Caption
+        <input type="text" name="caption" maxlength="60" placeholder="Optional caption">
+      </label>
+
+      <label>
+        Brightness
+        <input type="range" name="brightness" min="60" max="140" value="100">
+      </label>
+
+      <label>
+        Contrast
+        <input type="range" name="contrast" min="60" max="150" value="100">
+      </label>
+
+      <label>
+        Saturation
+        <input type="range" name="saturation" min="0" max="160" value="100">
+      </label>
+
+      <label>
+        Grayscale
+        <input type="range" name="grayscale" min="0" max="100" value="0">
+      </label>
+
+      <label>
+        Tone
+        <select name="tone">
+          <option value="neutral">Neutral</option>
+          <option value="warm">Warm</option>
+          <option value="cool">Cool</option>
+          <option value="party">Party</option>
+        </select>
+      </label>
+
+      <label>
+        Backdrop
+        <select name="backdrop">
+          <option value="sunrise">Sunrise</option>
+          <option value="mint">Mint</option>
+          <option value="night">Night</option>
+          <option value="paper">Paper</option>
+        </select>
+      </label>
+
+      <button id="publishPhoto" type="submit" disabled>Publish to board</button>
+      <p id="statusMessage" class="status">Enable the camera or upload a file to begin.</p>
+      <p class="hint">This is a browser experience. No app install is required.</p>
+    </form>
+  </section>
+</main>
+
+<script src="/static/js/join.js" defer></script>
+ </body>
+ </html>
+{{ end }}

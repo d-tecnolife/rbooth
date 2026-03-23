@@ -1,0 +1,60 @@
+{{ define "board" }}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<main class="shell shell-board">
+  <header class="board-header">
+    <div class="board-copy">
+      <p class="eyebrow">Live photo board</p>
+      <h1>Photo wall</h1>
+      <p class="lede">A soft collage of snapshots pinned together in real time. Scan the code, strike a pose, and watch your picture slide into the mix.</p>
+      <div class="board-chips">
+        <span>Scan to join</span>
+        <span>Live updates</span>
+        <span>Tap-friendly</span>
+      </div>
+    </div>
+    <div class="board-links">
+      <a href="/join">Take a photo</a>
+      <a href="/admin">Admin</a>
+    </div>
+  </header>
+
+  <section class="board-stage">
+    <div class="pinboard-frame">
+      <div class="pinboard-header">
+        <span>Moments pinned up</span>
+        <span>{{ len .Photos }} prints</span>
+      </div>
+      <div id="boardGrid" class="board-grid">
+      {{ range .Photos }}
+      <article class="photo-card">
+        <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
+        <div class="photo-meta">
+          <strong>{{ if .Caption }}{{ .Caption }}{{ else }}Fresh upload{{ end }}</strong>
+          <span>{{ .CreatedAt.Format "15:04:05 UTC" }}</span>
+        </div>
+      </article>
+      {{ else }}
+      <article class="photo-card photo-card-empty">
+        <div class="photo-meta">
+          <strong>The board is ready</strong>
+          <span>Fresh uploads will appear here and stack into the collage live.</span>
+        </div>
+      </article>
+      {{ end }}
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/static/js/board.js" defer></script>
+ </body>
+ </html>
+{{ end }}
