@@ -8,52 +8,42 @@
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body>
+<button class="menu-scrim" type="button" data-nav-scrim aria-label="Close menu"></button>
+<aside class="side-menu" aria-label="Site menu">
+  <div class="side-menu-head">
+    <div class="brand-block">
+      <div class="brand-mark">rb</div>
+      <div class="brand-copy">
+        <strong>rbooth</strong>
+        <span>photo board</span>
+      </div>
+    </div>
+    <button type="button" data-nav-close>Close</button>
+  </div>
+  <div class="side-menu-links">
+    <a class="nav-link nav-link-active" href="{{ .BoardURL }}">Photo board</a>
+    <a class="nav-link" href="{{ .JoinURL }}">Take a photo</a>
+    <a class="nav-link" href="{{ .AdminURL }}">Host tools</a>
+  </div>
+  <div class="side-menu-meta">
+    <div class="menu-note">The board is the focus here, so the navigation lives off-canvas and the wall gets the screen first.</div>
+  </div>
+</aside>
+
 <main class="shell shell-board">
   <nav class="site-nav" aria-label="Primary">
     <div class="brand-block">
       <div class="brand-mark">rb</div>
       <div class="brand-copy">
         <strong>rbooth</strong>
-        <span>pastel photo party board</span>
+        <span>live photo wall</span>
       </div>
     </div>
-    <div class="nav-links">
-      <a class="nav-link nav-link-active" href="{{ .BoardURL }}">Photo board</a>
-      <a class="nav-link" href="{{ .JoinURL }}">Take a photo</a>
-      <a class="nav-link" href="{{ .AdminURL }}">Host tools</a>
-    </div>
+    <button class="nav-toggle" type="button" data-nav-open>Menu</button>
   </nav>
 
-  <section class="board-stage">
-    <div class="board-frame">
-      <header class="board-header">
-        <section class="hero-panel">
-          <div class="board-copy">
-            <p class="eyebrow">Live memory board</p>
-            <h1>Snapshots pinned with a little sparkle.</h1>
-            <p class="lede">The board is styled like a real photo wall: tilted prints, soft paper tones, and fresh uploads dropping into the collage live as guests take them.</p>
-            <div class="board-chips">
-              <span>Scan and join</span>
-              <span>Live updates</span>
-              <span>Polaroid board feel</span>
-            </div>
-          </div>
-        </section>
-
-        <aside class="board-aside">
-          <p class="eyebrow">Guest flow</p>
-          <p>Keep this page on the main screen so the collage keeps building like a real-life pinboard during the event.</p>
-          <div class="board-links">
-            <a href="{{ .JoinURL }}">Open camera page</a>
-            <a href="{{ .AdminURL }}">Show QR and links</a>
-          </div>
-          <div class="board-note">
-            <h2>Board mood</h2>
-            <p>Soft pink corkboard, layered prints, and gentle uneven spacing so the wall feels hand-pinned rather than perfectly digital.</p>
-          </div>
-        </aside>
-      </header>
-
+  <section class="board-shell">
+    <div class="board-main">
       <div class="pinboard-frame">
         <div class="pinboard-header">
           <span>Moments pinned up</span>
@@ -78,23 +68,39 @@
         {{ end }}
         </div>
       </div>
+
+      <section class="board-topbar">
+        <div class="board-topbar-copy">
+          <p class="eyebrow">Live memory board</p>
+          <h1 class="compact-title">A pinned-photo wall, not a text-heavy landing page.</h1>
+          <p>Guests scan, snap, and publish. The board keeps building live like a real corkboard of prints.</p>
+        </div>
+        <div class="mini-chips">
+          <span>Live updates</span>
+          <span>Real-board feel</span>
+          <span>Shared screen ready</span>
+        </div>
+      </section>
     </div>
 
-    <aside class="board-aside">
-      <p class="eyebrow">Quick join</p>
-      <img class="board-mini-qr" src="/qr" alt="QR code for joining the booth">
-      <div class="board-note">
-        <h2>How it works</h2>
-        <p>Guests scan the code, take or upload a photo, add a caption, then publish it straight to the wall.</p>
+    <aside class="board-rail">
+      <div>
+        <p class="eyebrow">Quick join</p>
+        <img class="board-mini-qr" src="/qr" alt="QR code for joining the booth">
       </div>
       <div class="board-note">
-        <h2>Best setup</h2>
-        <p>Use a larger shared screen for the board and keep the QR code visible nearby so the collage grows continuously.</p>
+        <h2>Guest flow</h2>
+        <p>Scan the code, take or upload a photo, then publish it straight onto the wall.</p>
+      </div>
+      <div class="board-links">
+        <a href="{{ .JoinURL }}">Open camera page</a>
+        <a href="{{ .AdminURL }}">Show host tools</a>
       </div>
     </aside>
   </section>
 </main>
 
+<script src="/static/js/nav.js" defer></script>
 <script src="/static/js/board.js" defer></script>
 </body>
 </html>

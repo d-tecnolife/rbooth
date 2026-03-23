@@ -8,28 +8,46 @@
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body>
+<button class="menu-scrim" type="button" data-nav-scrim aria-label="Close menu"></button>
+<aside class="side-menu" aria-label="Site menu">
+  <div class="side-menu-head">
+    <div class="brand-block">
+      <div class="brand-mark">rb</div>
+      <div class="brand-copy">
+        <strong>rbooth</strong>
+        <span>host tools</span>
+      </div>
+    </div>
+    <button type="button" data-nav-close>Close</button>
+  </div>
+  <div class="side-menu-links">
+    <a class="nav-link" href="{{ .BoardURL }}">Photo board</a>
+    <a class="nav-link" href="{{ .JoinURL }}">Take a photo</a>
+    <a class="nav-link nav-link-active" href="{{ .AdminURL }}">Host tools</a>
+  </div>
+  <div class="side-menu-meta">
+    <div class="menu-note">Host controls stay secondary so the main board can own the visual emphasis.</div>
+  </div>
+</aside>
+
 <main class="shell shell-admin">
   <nav class="site-nav" aria-label="Primary">
     <div class="brand-block">
       <div class="brand-mark">rb</div>
       <div class="brand-copy">
         <strong>rbooth</strong>
-        <span>host dashboard</span>
+        <span>host tools</span>
       </div>
     </div>
-    <div class="nav-links">
-      <a class="nav-link" href="{{ .BoardURL }}">Photo board</a>
-      <a class="nav-link" href="{{ .JoinURL }}">Take a photo</a>
-      <a class="nav-link nav-link-active" href="{{ .AdminURL }}">Host tools</a>
-    </div>
+    <button class="nav-toggle" type="button" data-nav-open>Menu</button>
   </nav>
 
-  <section class="admin-panel">
-    <div class="admin-header">
+  <section class="compact-panel">
+    <div class="compact-grid">
       <div>
         <p class="eyebrow">Booth controls</p>
-        <h1>Host the board with style.</h1>
-        <p>Keep the join link and QR code nearby, then leave the photo wall open on a larger screen so the collage keeps building through the event.</p>
+        <h1 class="compact-title">Keep the board running.</h1>
+        <p class="compact-copy">Use this page for QR access, board links, and a quick status check while the photo wall stays on the main display.</p>
       </div>
       <div class="admin-actions">
         <a class="button-link" href="{{ .JoinURL }}">Open camera page</a>
@@ -58,11 +76,7 @@
         <p><strong>Started:</strong> {{ .Event.CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
         <p><strong>Photos on wall:</strong> {{ len .Photos }}</p>
         <p><strong>Guest flow:</strong> Scan, snap, style, publish.</p>
-        <p><strong>Display tip:</strong> Keep the board open on the biggest screen in the room.</p>
-      </div>
-      <div class="board-note">
-        <h2>Event mood</h2>
-        <p>The shared board is styled like a pastel pinboard, so the best setup is a visible QR code next to the board display for a smooth loop.</p>
+        <p><strong>Display tip:</strong> Keep the board on the biggest screen in the room.</p>
       </div>
     </article>
   </section>
@@ -85,6 +99,8 @@
     </div>
   </section>
 </main>
+
+<script src="/static/js/nav.js" defer></script>
 </body>
 </html>
 {{ end }}
