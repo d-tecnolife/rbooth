@@ -9,52 +9,93 @@
 </head>
 <body>
 <main class="shell shell-board">
-  <header class="board-header">
-    <div class="board-copy">
-      <p class="eyebrow">Live photo board</p>
-      <h1>Photo wall</h1>
-      <p class="lede">A soft collage of snapshots pinned together in real time. Scan the code, strike a pose, and watch your picture slide into the mix.</p>
-      <div class="board-chips">
-        <span>Scan to join</span>
-        <span>Live updates</span>
-        <span>Tap-friendly</span>
+  <nav class="site-nav" aria-label="Primary">
+    <div class="brand-block">
+      <div class="brand-mark">rb</div>
+      <div class="brand-copy">
+        <strong>rbooth</strong>
+        <span>pastel photo party board</span>
       </div>
     </div>
-    <div class="board-links">
-      <a href="/join">Take a photo</a>
-      <a href="/admin">Admin</a>
+    <div class="nav-links">
+      <a class="nav-link nav-link-active" href="{{ .BoardURL }}">Photo board</a>
+      <a class="nav-link" href="{{ .JoinURL }}">Take a photo</a>
+      <a class="nav-link" href="{{ .AdminURL }}">Host tools</a>
     </div>
-  </header>
+  </nav>
 
   <section class="board-stage">
-    <div class="pinboard-frame">
-      <div class="pinboard-header">
-        <span>Moments pinned up</span>
-        <span>{{ len .Photos }} prints</span>
-      </div>
-      <div id="boardGrid" class="board-grid">
-      {{ range .Photos }}
-      <article class="photo-card">
-        <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
-        <div class="photo-meta">
-          <strong>{{ if .Caption }}{{ .Caption }}{{ else }}Fresh upload{{ end }}</strong>
-          <span>{{ .CreatedAt.Format "15:04:05 UTC" }}</span>
+    <div class="board-frame">
+      <header class="board-header">
+        <section class="hero-panel">
+          <div class="board-copy">
+            <p class="eyebrow">Live memory board</p>
+            <h1>Snapshots pinned with a little sparkle.</h1>
+            <p class="lede">The board is styled like a real photo wall: tilted prints, soft paper tones, and fresh uploads dropping into the collage live as guests take them.</p>
+            <div class="board-chips">
+              <span>Scan and join</span>
+              <span>Live updates</span>
+              <span>Polaroid board feel</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="board-aside">
+          <p class="eyebrow">Guest flow</p>
+          <p>Keep this page on the main screen so the collage keeps building like a real-life pinboard during the event.</p>
+          <div class="board-links">
+            <a href="{{ .JoinURL }}">Open camera page</a>
+            <a href="{{ .AdminURL }}">Show QR and links</a>
+          </div>
+          <div class="board-note">
+            <h2>Board mood</h2>
+            <p>Soft pink corkboard, layered prints, and gentle uneven spacing so the wall feels hand-pinned rather than perfectly digital.</p>
+          </div>
+        </aside>
+      </header>
+
+      <div class="pinboard-frame">
+        <div class="pinboard-header">
+          <span>Moments pinned up</span>
+          <span>{{ len .Photos }} prints on the wall</span>
         </div>
-      </article>
-      {{ else }}
-      <article class="photo-card photo-card-empty">
-        <div class="photo-meta">
-          <strong>The board is ready</strong>
-          <span>Fresh uploads will appear here and stack into the collage live.</span>
+        <div id="boardGrid" class="board-grid">
+        {{ range .Photos }}
+        <article class="photo-card">
+          <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
+          <div class="photo-meta">
+            <strong>{{ if .Caption }}{{ .Caption }}{{ else }}Fresh upload{{ end }}</strong>
+            <span>{{ .CreatedAt.Format "15:04:05 UTC" }}</span>
+          </div>
+        </article>
+        {{ else }}
+        <article class="photo-card photo-card-empty">
+          <div class="photo-meta">
+            <strong>The board is ready</strong>
+            <span>New snapshots will pin themselves here and stack into the collage live.</span>
+          </div>
+        </article>
+        {{ end }}
         </div>
-      </article>
-      {{ end }}
       </div>
     </div>
+
+    <aside class="board-aside">
+      <p class="eyebrow">Quick join</p>
+      <img class="board-mini-qr" src="/qr" alt="QR code for joining the booth">
+      <div class="board-note">
+        <h2>How it works</h2>
+        <p>Guests scan the code, take or upload a photo, add a caption, then publish it straight to the wall.</p>
+      </div>
+      <div class="board-note">
+        <h2>Best setup</h2>
+        <p>Use a larger shared screen for the board and keep the QR code visible nearby so the collage grows continuously.</p>
+      </div>
+    </aside>
   </section>
 </main>
 
 <script src="/static/js/board.js" defer></script>
- </body>
- </html>
+</body>
+</html>
 {{ end }}

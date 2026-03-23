@@ -9,15 +9,32 @@
 </head>
 <body>
 <main class="shell shell-admin">
-  <section class="admin-header">
-    <div>
-      <p class="eyebrow">Booth controls</p>
-      <h1>Share the moment</h1>
-      <p>Keep this page nearby for the QR code and quick links while everyone adds photos from their browser.</p>
+  <nav class="site-nav" aria-label="Primary">
+    <div class="brand-block">
+      <div class="brand-mark">rb</div>
+      <div class="brand-copy">
+        <strong>rbooth</strong>
+        <span>host dashboard</span>
+      </div>
     </div>
-    <div class="actions">
-      <a class="button-link" href="/join">Open camera page</a>
-      <a class="button-link" href="/">Open photo wall</a>
+    <div class="nav-links">
+      <a class="nav-link" href="{{ .BoardURL }}">Photo board</a>
+      <a class="nav-link" href="{{ .JoinURL }}">Take a photo</a>
+      <a class="nav-link nav-link-active" href="{{ .AdminURL }}">Host tools</a>
+    </div>
+  </nav>
+
+  <section class="admin-panel">
+    <div class="admin-header">
+      <div>
+        <p class="eyebrow">Booth controls</p>
+        <h1>Host the board with style.</h1>
+        <p>Keep the join link and QR code nearby, then leave the photo wall open on a larger screen so the collage keeps building through the event.</p>
+      </div>
+      <div class="admin-actions">
+        <a class="button-link" href="{{ .JoinURL }}">Open camera page</a>
+        <a class="button-link" href="{{ .BoardURL }}">Open photo wall</a>
+      </div>
     </div>
   </section>
 
@@ -37,10 +54,16 @@
 
     <article class="card info-card">
       <h2>Quick snapshot</h2>
-      <p><strong>Started:</strong> {{ .Event.CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
-      <p><strong>Photos on wall:</strong> {{ len .Photos }}</p>
-      <p><strong>Guest flow:</strong> Scan, snap, style, publish.</p>
-      <p><strong>Tip:</strong> Keep the wall open on a bigger screen for the best effect.</p>
+      <div class="admin-facts">
+        <p><strong>Started:</strong> {{ .Event.CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
+        <p><strong>Photos on wall:</strong> {{ len .Photos }}</p>
+        <p><strong>Guest flow:</strong> Scan, snap, style, publish.</p>
+        <p><strong>Display tip:</strong> Keep the board open on the biggest screen in the room.</p>
+      </div>
+      <div class="board-note">
+        <h2>Event mood</h2>
+        <p>The shared board is styled like a pastel pinboard, so the best setup is a visible QR code next to the board display for a smooth loop.</p>
+      </div>
     </article>
   </section>
 
@@ -62,6 +85,6 @@
     </div>
   </section>
 </main>
- </body>
- </html>
+</body>
+</html>
 {{ end }}

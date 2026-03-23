@@ -9,18 +9,41 @@
 </head>
 <body>
 <main class="shell shell-join">
-  <section class="join-header">
-    <p class="eyebrow">Join the booth</p>
-    <h1>Step in and snap</h1>
-    <p>Open the camera, tune the mood, and send your picture straight to the wall without downloading anything.</p>
-    <div class="board-chips">
-      <span>1. Capture</span>
-      <span>2. Style</span>
-      <span>3. Pin it</span>
+  <nav class="site-nav" aria-label="Primary">
+    <div class="brand-block">
+      <div class="brand-mark">rb</div>
+      <div class="brand-copy">
+        <strong>rbooth</strong>
+        <span>capture, style, pin</span>
+      </div>
     </div>
-    <div class="board-links">
-      <a href="/">View photo wall</a>
-      <a href="/admin">Admin</a>
+    <div class="nav-links">
+      <a class="nav-link" href="{{ .BoardURL }}">Photo board</a>
+      <a class="nav-link nav-link-active" href="{{ .JoinURL }}">Take a photo</a>
+      <a class="nav-link" href="{{ .AdminURL }}">Host tools</a>
+    </div>
+  </nav>
+
+  <section class="join-panel">
+    <div class="join-header">
+      <div>
+        <p class="eyebrow">Join the booth</p>
+        <h1>Step in, snap, and pin your moment.</h1>
+        <p>Use your camera or upload a favorite shot, soften it with the built-in styling controls, and send it straight to the shared memory board.</p>
+        <div class="board-chips">
+          <span>1. Capture</span>
+          <span>2. Style</span>
+          <span>3. Publish</span>
+        </div>
+      </div>
+      <aside class="join-guide">
+        <h2>Before you post</h2>
+        <ol>
+          <li>Center the frame and capture when the camera looks good.</li>
+          <li>Adjust the tone, backdrop, and caption until it feels right.</li>
+          <li>Publish and watch it appear on the board in real time.</li>
+        </ol>
+      </aside>
     </div>
   </section>
 
@@ -44,7 +67,7 @@
     </div>
 
     <form id="uploadForm" class="card controls-card">
-      <h2>Style</h2>
+      <h2>Style your print</h2>
 
       <label>
         Caption
@@ -93,12 +116,12 @@
 
       <button id="publishPhoto" type="submit" disabled>Publish to board</button>
       <p id="statusMessage" class="status">Enable the camera or upload a file to begin.</p>
-      <p class="hint">This is a browser experience. No app install is required.</p>
+      <p class="hint">No app install required. This entire experience stays in the browser.</p>
     </form>
   </section>
 </main>
 
 <script src="/static/js/join.js" defer></script>
- </body>
- </html>
+</body>
+</html>
 {{ end }}

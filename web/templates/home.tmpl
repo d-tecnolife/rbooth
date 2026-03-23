@@ -9,25 +9,55 @@
 </head>
 <body>
 <main class="shell shell-home">
-  <section class="hero">
-    <p class="eyebrow">Browser-only photo booth</p>
-    <h1>rbooth</h1>
-    <p class="lede">Create an event, put the board on a shared screen, and let guests join instantly by scanning a QR code in their browser.</p>
-
-    <form class="card create-form" method="post" action="/events">
-      <label for="code">Event code</label>
-      <div class="row">
-        <input id="code" name="code" type="text" value="{{ .DefaultCode }}" maxlength="24" autocomplete="off">
-        <button type="submit">Create booth</button>
+  <nav class="site-nav" aria-label="Primary">
+    <div class="brand-block">
+      <div class="brand-mark">rb</div>
+      <div class="brand-copy">
+        <strong>rbooth</strong>
+        <span>girly pastel photo booth</span>
       </div>
-      <p class="hint">Use letters, numbers, and dashes only.</p>
-    </form>
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Photo board</a>
+      <a class="nav-link" href="/join">Take a photo</a>
+      <a class="nav-link" href="/admin">Host tools</a>
+    </div>
+  </nav>
+
+  <section class="hero-panel">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Browser-only photo booth</p>
+        <h1>A pastel photo booth that feels party-ready.</h1>
+        <p>Create a booth, open the live board on a shared screen, and let guests join instantly from their phones for a scrapbook-style collage.</p>
+
+        <form class="card create-form" method="post" action="/events">
+          <label for="code">Event code</label>
+          <div class="row">
+            <input id="code" name="code" type="text" value="{{ .DefaultCode }}" maxlength="24" autocomplete="off">
+            <button type="submit">Create booth</button>
+          </div>
+          <p class="hint">Use letters, numbers, and dashes only.</p>
+        </form>
+      </div>
+
+      <aside class="home-side">
+        <div class="hero-note">
+          <h2>Designed for the room</h2>
+          <p>The board looks like real pinned prints, so it reads better on a larger display than a standard app grid.</p>
+        </div>
+        <div class="mini-note">
+          <strong>Flow</strong>
+          <p>Scan, snap, style, and watch each photo land on the wall live.</p>
+        </div>
+      </aside>
+    </div>
   </section>
 
   <section class="event-list">
     <div class="section-head">
       <h2>Recent events</h2>
-      <a href="/admin/demo">Open demo</a>
+      <a class="nav-link" href="/admin/demo">Open demo</a>
     </div>
 
     {{ if .Events }}
@@ -37,9 +67,9 @@
         <h3>{{ .Code }}</h3>
         <p>Created {{ .CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
         <div class="actions">
-          <a href="/admin/{{ .Code }}">Admin</a>
-          <a href="/join/{{ .Code }}">Join</a>
-          <a href="/board/{{ .Code }}">Board</a>
+          <a class="nav-link" href="/admin/{{ .Code }}">Admin</a>
+          <a class="nav-link" href="/join/{{ .Code }}">Join</a>
+          <a class="nav-link" href="/board/{{ .Code }}">Board</a>
         </div>
       </article>
       {{ end }}
