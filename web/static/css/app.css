@@ -1,3 +1,31 @@
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/static/fonts/PPNeueMontreal/PPNeueMontreal-Book.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/static/fonts/PPNeueMontreal/PPNeueMontreal-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/static/fonts/PPNeueMontreal/PPNeueMontreal-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/static/fonts/PPNeueMontreal/PPNeueMontreal-Italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+}
+
 :root {
   --bg: #fff8fc;
   --bg-soft: #ffeef7;
@@ -32,7 +60,7 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--ink);
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.96), transparent 28rem),
     radial-gradient(circle at 86% 10%, rgba(255, 222, 238, 0.78), transparent 18rem),
@@ -156,14 +184,16 @@ label {
     radial-gradient(circle at 30% 25%, #fff9fc 0%, rgba(255, 255, 255, 0.7) 30%, transparent 31%),
     linear-gradient(145deg, #ff8dbe 0%, #ffc2dc 100%);
   color: #9e3e6f;
-  font-family: "Georgia", "Times New Roman", serif;
+  font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
+  font-weight: 700;
   font-size: 1.1rem;
   box-shadow: 0 10px 24px rgba(214, 77, 139, 0.16);
 }
 
 .brand-copy strong {
   display: block;
-  font-family: "Georgia", "Times New Roman", serif;
+  font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
+  font-weight: 700;
   color: #934869;
   font-size: 1.08rem;
 }
@@ -294,7 +324,8 @@ body.menu-open .menu-scrim {
 
 .compact-title {
   margin: 0;
-  font-family: "Georgia", "Times New Roman", serif;
+  font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
+  font-weight: 700;
   font-size: clamp(1.35rem, 3vw, 2rem);
   line-height: 1.05;
   color: #9d4672;
@@ -336,7 +367,8 @@ body.menu-open .menu-scrim {
 .info-card h2,
 .board-note h2 {
   margin: 0;
-  font-family: "Georgia", "Times New Roman", serif;
+  font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
+  font-weight: 700;
   color: #99506f;
 }
 
@@ -399,7 +431,8 @@ body.menu-open .menu-scrim {
 
 .event-card h3 {
   margin: 0;
-  font-family: "Georgia", "Times New Roman", serif;
+  font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
+  font-weight: 700;
   color: #8f4966;
   font-size: 1.35rem;
 }
@@ -653,7 +686,8 @@ body.menu-open .menu-scrim {
 }
 
 .photo-meta strong {
-  font-family: "Georgia", "Times New Roman", serif;
+  font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
+  font-weight: 700;
   color: #874567;
 }
 
