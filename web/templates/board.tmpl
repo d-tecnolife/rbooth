@@ -25,9 +25,6 @@
     <a class="nav-link nav-link-active" href="{{ .BoardURL }}">Photo wall</a>
     <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
   </div>
-  <div class="side-menu-meta">
-    <div class="menu-note">Home, photo wall, and camera stay in the same menu.</div>
-  </div>
 </aside>
 
 <main class="shell shell-board">
@@ -46,22 +43,22 @@
     <div class="board-main">
       <div class="pinboard-frame">
         <div class="pinboard-header">
-          <span id="boardCount">{{ len .Photos }} photos pinned on the board</span>
+          <span id="boardCount">{{ len .Photos }} photos pinned on the wall</span>
         </div>
         <div id="boardGrid" class="board-grid">
         {{ range .Photos }}
         <article class="photo-card" data-photo-id="{{ .ID }}">
           <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
           <div class="photo-meta">
-            <strong>{{ if .Caption }}{{ .Caption }}{{ else }}Fresh upload{{ end }}</strong>
+            <strong class="photo-caption">{{ .Caption }}</strong>
             <span>{{ .CreatedAt.Format "15:04:05 UTC" }}</span>
           </div>
         </article>
         {{ else }}
         <article class="photo-card photo-card-empty">
           <div class="photo-meta">
-            <strong>The board is ready</strong>
-            <span>New snapshots will pin themselves here and stack into the collage live.</span>
+            <strong>the wall is ready</strong>
+            <span>new snapshots will pin themselves here and stack into the collage live.</span>
           </div>
         </article>
         {{ end }}

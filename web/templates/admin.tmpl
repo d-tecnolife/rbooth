@@ -25,9 +25,6 @@
     <a class="nav-link" href="{{ .BoardURL }}">Photo wall</a>
     <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
   </div>
-  <div class="side-menu-meta">
-    <div class="menu-note">Host tools stay off the shared menu and only open from `/admin`.</div>
-  </div>
 </aside>
 
 <main class="shell shell-admin">
@@ -93,7 +90,7 @@
       <article class="card thumb-card" data-photo-id="{{ .ID }}">
         <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
         <div class="thumb-copy">
-          <p>{{ .Caption }}</p>
+          <p class="thumb-caption">{{ .Caption }}</p>
           <p class="thumb-file">{{ .Filename }}</p>
         </div>
         <button class="button-link danger-button" type="button" data-delete-photo="{{ .ID }}">Delete {{ .ID }}</button>

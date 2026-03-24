@@ -62,6 +62,7 @@ body {
   color: var(--ink);
   font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
   background: linear-gradient(180deg, #fffafc 0%, #fff1f7 100%);
+  text-transform: lowercase;
 }
 
 a {
@@ -118,6 +119,7 @@ select {
   padding: 0.85rem 0.95rem;
   background: rgba(255, 255, 255, 0.9);
   color: var(--ink);
+  text-transform: none;
 }
 
 input:focus,
@@ -1021,7 +1023,7 @@ body.menu-open .menu-scrim {
 
 .board-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 18rem;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
 }
@@ -1208,6 +1210,11 @@ label,
   font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
   font-weight: 700;
   color: #874567;
+}
+
+.photo-caption,
+.thumb-caption {
+  text-transform: none;
 }
 
 .photo-meta span {

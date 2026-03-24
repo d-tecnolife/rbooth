@@ -84,8 +84,9 @@ type Photo struct {
 }
 
 type persistedState struct {
-	Events []Event `json:"events"`
-	Photos []Photo `json:"photos"`
+	Events          []Event `json:"events"`
+	Photos          []Photo `json:"photos"`
+	NextPhotoNumber int     `json:"next_photo_number,omitempty"`
 }
 
 type pageData struct {
@@ -162,7 +163,9 @@ func New(cfg Config) (*App, error) {
 	if err := app.loadState(); err != nil {
 		return nil, err
 	}
-	app.nextPhotoNumber = app.nextAvailablePhotoNumber()
+	if app.nextPhotoNumber < 1 {
+		app.nextPhotoNumber = app.nextAvailablePhotoNumber()
+	}
 
 	app.ensureDefaultEvent()
 
@@ -328,6 +331,7 @@ func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 	caption := formatPhotoCaption(id, rawCaption)
 	filename := buildPhotoFilename(id, rawCaption)
 	storageKey := event.Code + "/" + filename
+	createdAt := time.Now().UTC()
 	if err := a.storage.Save(r.Context(), storageKey, "image/jpeg", processed); err != nil {
 		http.Error(w, "failed to store image", http.StatusInternalServerError)
 		return
@@ -339,8 +343,8 @@ func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 		Filename:    filename,
 		StorageKey:  storageKey,
 		Caption:     caption,
-		CreatedAt:   time.Now().UTC(),
-		DisplayURL:  "/media/" + storageKey,
+		CreatedAt:   createdAt,
+		DisplayURL:  displayURL(storageKey, createdAt),
 		FilterLabel: strings.TrimSpace(r.FormValue("filterLabel")),
 	}
 
@@ -670,8 +674,8 @@ func (a *App) loadState() error {
 		if photo.StorageKey == "" && photo.EventCode != "" && photo.Filename != "" {
 			photo.StorageKey = photo.EventCode + "/" + photo.Filename
 		}
-		if photo.DisplayURL == "" && photo.StorageKey != "" {
-			photo.DisplayURL = "/media/" + photo.StorageKey
+		if photo.StorageKey != "" {
+			photo.DisplayURL = displayURL(photo.StorageKey, photo.CreatedAt)
 		}
 		a.photos[photo.EventCode] = append(a.photos[photo.EventCode], photo)
 	}
@@ -687,6 +691,11 @@ func (a *App) loadState() error {
 			return 0
 		})
 		a.photos[code] = photos
+	}
+
+	a.nextPhotoNumber = a.nextAvailablePhotoNumber()
+	if state.NextPhotoNumber > a.nextPhotoNumber {
+		a.nextPhotoNumber = state.NextPhotoNumber
 	}
 
 	return nil
@@ -725,8 +734,9 @@ func (a *App) saveState() error {
 	})
 
 	payload, err := json.MarshalIndent(persistedState{
-		Events: events,
-		Photos: photos,
+		Events:          events,
+		Photos:          photos,
+		NextPhotoNumber: a.nextPhotoNumber,
 	}, "", "  ")
 	if err != nil {
 		return fmt.Errorf("marshal state: %w", err)
@@ -784,14 +794,15 @@ func (a *App) ensureSamplePhotos() error {
 			return fmt.Errorf("write sample photo: %w", err)
 		}
 
+		createdAt := time.Now().UTC().Add(-time.Duration(len(samples)-index) * time.Minute)
 		photo := Photo{
 			ID:          fmt.Sprintf("sample-%02d", index+1),
 			EventCode:   singleBoardCode,
 			Filename:    sample.Filename,
 			StorageKey:  storageKey,
 			Caption:     sample.Caption,
-			CreatedAt:   time.Now().UTC().Add(-time.Duration(len(samples)-index) * time.Minute),
-			DisplayURL:  "/media/" + storageKey,
+			CreatedAt:   createdAt,
+			DisplayURL:  displayURL(storageKey, createdAt),
 			FilterLabel: sample.Filter,
 		}
 
@@ -1066,6 +1077,14 @@ func appMark(name string) string {
 		return "rb"
 	}
 	return string(mark)
+}
+
+func displayURL(storageKey string, createdAt time.Time) string {
+	path := "/media/" + storageKey
+	if createdAt.IsZero() {
+		return path
+	}
+	return path + "?v=" + strconv.FormatInt(createdAt.UTC().UnixNano(), 10)
 }
 
 func writeJSON(w http.ResponseWriter, status int, payload any) {
