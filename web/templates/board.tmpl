@@ -15,18 +15,18 @@
       <div class="brand-mark">rb</div>
       <div class="brand-copy">
         <strong>rbooth</strong>
-        <span>photo board</span>
+        <span>shared booth</span>
       </div>
     </div>
     <button type="button" data-nav-close>Close</button>
   </div>
   <div class="side-menu-links">
     <a class="nav-link" href="/">Home</a>
-    <a class="nav-link nav-link-active" href="{{ .BoardURL }}">Photo board</a>
+    <a class="nav-link nav-link-active" href="{{ .BoardURL }}">Photo wall</a>
     <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
   </div>
   <div class="side-menu-meta">
-    <div class="menu-note">Open the camera page to add another print to the wall.</div>
+    <div class="menu-note">Home, photo wall, and camera stay in the same menu.</div>
   </div>
 </aside>
 
@@ -46,11 +46,11 @@
     <div class="board-main">
       <div class="pinboard-frame">
         <div class="pinboard-header">
-          <span>{{ len .Photos }} photos pinned on the board</span>
+          <span id="boardCount">{{ len .Photos }} photos pinned on the board</span>
         </div>
         <div id="boardGrid" class="board-grid">
         {{ range .Photos }}
-        <article class="photo-card">
+        <article class="photo-card" data-photo-id="{{ .ID }}">
           <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
           <div class="photo-meta">
             <strong>{{ if .Caption }}{{ .Caption }}{{ else }}Fresh upload{{ end }}</strong>

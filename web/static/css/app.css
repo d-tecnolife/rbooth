@@ -34,15 +34,15 @@
   --panel: rgba(255, 245, 250, 0.86);
   --board: #f6bed7;
   --board-deep: #e890b5;
-  --paper-shadow: rgba(128, 72, 99, 0.16);
+  --paper-shadow: rgba(95, 57, 80, 0.08);
   --ink: #5f3950;
   --ink-soft: #876276;
   --accent: #ff72af;
   --accent-deep: #d64d8b;
   --accent-soft: #ffd4e7;
   --line: rgba(141, 82, 113, 0.14);
-  --shadow-lg: 0 26px 60px rgba(190, 113, 149, 0.18);
-  --shadow-md: 0 16px 28px rgba(177, 103, 138, 0.12);
+  --shadow-lg: 0 10px 24px rgba(95, 57, 80, 0.08);
+  --shadow-md: 0 4px 14px rgba(95, 57, 80, 0.06);
   --radius-xl: 1rem;
   --radius-lg: 0.8rem;
   --radius-md: 0.55rem;
@@ -61,23 +61,7 @@ body {
   min-height: 100vh;
   color: var(--ink);
   font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.96), transparent 28rem),
-    radial-gradient(circle at 86% 10%, rgba(255, 222, 238, 0.78), transparent 18rem),
-    linear-gradient(180deg, #fff9fc 0%, var(--bg-soft) 56%, #ffe9f3 100%);
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
-  background-size: 30px 30px;
-  opacity: 0.2;
+  background: linear-gradient(180deg, #fffafc 0%, #fff1f7 100%);
 }
 
 a {
@@ -96,20 +80,20 @@ button,
   border: 0;
   border-radius: 0.45rem;
   padding: 0.88rem 1.1rem;
-  background: linear-gradient(135deg, var(--accent) 0%, #ff95c4 100%);
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
-  box-shadow: 0 10px 24px rgba(214, 77, 139, 0.2);
+  box-shadow: none;
   transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
 }
 
 .button-secondary {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.92);
   color: var(--accent-deep);
   border: 1px solid rgba(255, 114, 175, 0.16);
-  box-shadow: 0 10px 20px rgba(214, 77, 139, 0.08);
+  box-shadow: none;
 }
 
 button:hover,
@@ -117,7 +101,7 @@ button:hover,
 .nav-link:hover,
 .board-links a:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 28px rgba(214, 77, 139, 0.2);
+  box-shadow: none;
 }
 
 button:disabled {
@@ -168,11 +152,10 @@ label {
   gap: 1rem;
   margin-bottom: 1rem;
   padding: 0.85rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(141, 82, 113, 0.12);
   border-radius: 0.75rem;
-  background: rgba(255, 251, 253, 0.72);
+  background: rgba(255, 251, 253, 0.94);
   box-shadow: var(--shadow-md);
-  backdrop-filter: blur(18px);
 }
 
 .brand-block {
@@ -187,14 +170,12 @@ label {
   width: 2.7rem;
   height: 2.7rem;
   border-radius: 0.55rem;
-  background:
-    radial-gradient(circle at 30% 25%, #fff9fc 0%, rgba(255, 255, 255, 0.7) 30%, transparent 31%),
-    linear-gradient(145deg, #ff8dbe 0%, #ffc2dc 100%);
+  background: #ffd4e7;
   color: #9e3e6f;
   font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
-  box-shadow: 0 10px 24px rgba(214, 77, 139, 0.16);
+  box-shadow: none;
 }
 
 .brand-copy strong {
@@ -226,11 +207,9 @@ label {
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 1rem;
-  background:
-    linear-gradient(180deg, rgba(255, 249, 252, 0.97), rgba(255, 235, 244, 0.94));
-  border-left: 1px solid rgba(255, 255, 255, 0.72);
-  box-shadow: -18px 0 42px rgba(128, 72, 99, 0.16);
-  backdrop-filter: blur(18px);
+  background: rgba(255, 249, 252, 0.98);
+  border-left: 1px solid rgba(141, 82, 113, 0.12);
+  box-shadow: none;
   transform: translateX(104%);
   transition: transform 220ms ease;
 }
@@ -275,13 +254,13 @@ body.menu-open .menu-scrim {
   border: 1px solid rgba(255, 114, 175, 0.12);
   border-radius: 0.45rem;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 8px 18px rgba(214, 77, 139, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: none;
   transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
 .nav-link-active {
-  background: linear-gradient(135deg, var(--accent-soft), #fff5f9);
+  background: #ffe6f1;
   color: #a44574;
 }
 
@@ -299,10 +278,9 @@ body.menu-open .menu-scrim {
 .board-rail,
 .board-topbar {
   background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(141, 82, 113, 0.12);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
-  backdrop-filter: blur(14px);
 }
 
 .compact-panel,
@@ -319,6 +297,27 @@ body.menu-open .menu-scrim {
 
 .compact-panel {
   margin-bottom: 1rem;
+}
+
+.auth-panel {
+  max-width: 34rem;
+  margin: 10vh auto 0;
+}
+
+.auth-shell {
+  min-height: auto;
+}
+
+.auth-form {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 24rem;
+}
+
+.auth-error {
+  margin: 0;
+  color: #8b214a;
+  font-size: 0.92rem;
 }
 
 .notfound-panel {
@@ -488,7 +487,7 @@ body.menu-open .menu-scrim {
   border: 1px solid rgba(255, 114, 175, 0.12);
   border-radius: 0.7rem;
   background: rgba(255, 251, 253, 0.92);
-  box-shadow: 0 12px 28px rgba(177, 103, 138, 0.12);
+  box-shadow: none;
 }
 
 .slider-row {
@@ -553,9 +552,7 @@ body.menu-open .menu-scrim {
   min-height: 10rem;
   max-height: min(36vh, 18rem);
   border-radius: 0.85rem;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.42), transparent 20rem),
-    linear-gradient(150deg, #ff9ec8, #ffc8df 52%, #ffe8f1 100%);
+  background: linear-gradient(180deg, #ffe3ef, #ffd3e4);
 }
 
 .preview-stage {
@@ -611,9 +608,9 @@ body.menu-open .menu-scrim {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  border: 10px solid rgba(255, 255, 255, 0.14);
+  border: 10px solid rgba(255, 255, 255, 0.36);
   border-radius: 1rem;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  box-shadow: none;
 }
 
 .processing-overlay {
@@ -622,8 +619,7 @@ body.menu-open .menu-scrim {
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(255, 248, 252, 0.18);
-  backdrop-filter: blur(4px);
+  background: rgba(255, 248, 252, 0.78);
   z-index: 2;
 }
 
@@ -637,8 +633,8 @@ body.menu-open .menu-scrim {
   min-width: 12rem;
   padding: 0.85rem 1rem;
   background: rgba(255, 251, 253, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  box-shadow: 0 16px 30px rgba(111, 54, 82, 0.14);
+  border: 1px solid rgba(141, 82, 113, 0.12);
+  box-shadow: none;
   color: var(--accent-deep);
   text-align: center;
 }
@@ -759,9 +755,7 @@ body.menu-open .menu-scrim {
   min-height: 0;
   overflow: hidden;
   border-radius: 1rem;
-  background:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.12), transparent 38rem),
-    linear-gradient(180deg, rgba(255, 241, 248, 0.48), rgba(255, 230, 241, 0.24));
+  background: rgba(255, 244, 249, 0.78);
   box-shadow: var(--shadow-md);
 }
 
@@ -801,12 +795,8 @@ body.menu-open .menu-scrim {
   max-width: 100%;
   max-height: calc(100dvh - 8.6rem);
   min-height: 16rem;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.2), transparent 18rem),
-    linear-gradient(145deg, rgba(255, 196, 221, 0.24), rgba(255, 242, 247, 0.08));
-  box-shadow:
-    0 24px 52px rgba(111, 54, 82, 0.16),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  background: rgba(255, 251, 253, 0.96);
+  box-shadow: none;
 }
 
 .capture-overlay-actions {
@@ -828,9 +818,9 @@ body.menu-open .menu-scrim {
 .capture-fab {
   width: 3.9rem;
   height: 3.9rem;
-  background: linear-gradient(135deg, #ff6ead 0%, #ff8dbd 100%);
-  border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: 0 18px 36px rgba(214, 77, 139, 0.26);
+  background: var(--accent);
+  border: 1px solid rgba(141, 82, 113, 0.12);
+  box-shadow: none;
   border-radius: 0.42rem;
   color: #fff;
 }
@@ -848,11 +838,10 @@ body.menu-open .menu-scrim {
   min-width: 9.4rem;
   padding: 0.88rem 1.05rem;
   border-radius: 0.42rem;
-  background: rgba(255, 251, 253, 0.9);
+  background: rgba(255, 251, 253, 0.98);
   color: var(--accent-deep);
   border: 1px solid rgba(255, 114, 175, 0.16);
-  box-shadow: 0 14px 32px rgba(177, 103, 138, 0.14);
-  backdrop-filter: blur(18px);
+  box-shadow: none;
   font-weight: 600;
 }
 
@@ -907,11 +896,10 @@ body.menu-open .menu-scrim {
   align-content: start;
   padding: 0.95rem 0.95rem 1.05rem;
   overflow-y: auto;
-  background: rgba(255, 248, 252, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.68);
+  background: rgba(255, 248, 252, 0.98);
+  border: 1px solid rgba(141, 82, 113, 0.12);
   border-radius: 0.7rem 0.7rem 0 0;
-  box-shadow: 0 24px 52px rgba(111, 54, 82, 0.16);
-  backdrop-filter: blur(22px);
+  box-shadow: none;
   transition: transform 220ms ease, opacity 220ms ease;
   z-index: 4;
 }
@@ -925,9 +913,7 @@ body.menu-open .menu-scrim {
   gap: 0.55rem;
   margin: -0.95rem -0.95rem 0;
   padding: 0.62rem 0.95rem 0.42rem;
-  background:
-    linear-gradient(180deg, rgba(255, 248, 252, 0.98), rgba(255, 248, 252, 0.92) 78%, rgba(255, 248, 252, 0));
-  backdrop-filter: blur(16px);
+  background: rgba(255, 248, 252, 0.98);
 }
 
 .editor-drawer-head::before {
@@ -970,9 +956,8 @@ body.menu-open .menu-scrim {
   gap: 0.65rem;
   padding: 0.75rem 0.8rem;
   background: rgba(255, 248, 252, 0.94);
-  border-top: 1px solid rgba(255, 255, 255, 0.66);
-  box-shadow: 0 -10px 28px rgba(111, 54, 82, 0.12);
-  backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(141, 82, 113, 0.12);
+  box-shadow: none;
 }
 
 .capture-submit-bar button {
@@ -1025,7 +1010,7 @@ body.menu-open .menu-scrim {
   border-radius: 0.55rem;
   background: #fff;
   padding: 0.7rem;
-  box-shadow: 0 12px 24px rgba(177, 103, 138, 0.12);
+  box-shadow: none;
 }
 
 .board-shell {
@@ -1068,13 +1053,8 @@ body.menu-open .menu-scrim {
   position: relative;
   padding: 1.5rem 1.2rem 1.8rem;
   border-radius: 1rem;
-  background:
-    radial-gradient(circle at 16% 10%, rgba(255, 244, 250, 0.84), transparent 18rem),
-    radial-gradient(circle at 84% 14%, rgba(255, 213, 232, 0.7), transparent 16rem),
-    linear-gradient(180deg, var(--board) 0%, var(--board-deep) 100%);
-  box-shadow:
-    0 30px 56px rgba(182, 90, 134, 0.22),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  background: linear-gradient(180deg, #f3bfd6 0%, #e8a7c4 100%);
+  box-shadow: none;
 }
 
 .pinboard-frame::before {
@@ -1082,11 +1062,7 @@ body.menu-open .menu-scrim {
   position: absolute;
   inset: 14px;
   border-radius: 0.72rem;
-  background-image:
-    radial-gradient(rgba(255, 255, 255, 0.17) 1px, transparent 1px),
-    radial-gradient(rgba(160, 73, 115, 0.08) 1px, transparent 1px);
-  background-position: 0 0, 13px 13px;
-  background-size: 26px 26px;
+  background: rgba(255, 245, 250, 0.18);
   pointer-events: none;
 }
 
@@ -1118,10 +1094,8 @@ body.menu-open .menu-scrim {
   min-height: 14rem;
   padding: 0.82rem 0.82rem 1rem;
   border-radius: 0.28rem;
-  background: linear-gradient(180deg, #fffefe, #fff2f7);
-  box-shadow:
-    0 18px 32px var(--paper-shadow),
-    0 4px 10px rgba(255, 255, 255, 0.56) inset;
+  background: #fff8fb;
+  box-shadow: 0 4px 12px var(--paper-shadow);
   transform: rotate(var(--tilt));
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
@@ -1134,8 +1108,7 @@ body.menu-open .menu-scrim {
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 999px;
-  background: radial-gradient(circle at 35% 35%, #fff9fc, #ff609d 72%);
-  box-shadow: 0 2px 4px rgba(124, 49, 91, 0.22);
+  background: #d885aa;
 }
 
 .photo-card::after {
@@ -1151,7 +1124,7 @@ body.menu-open .menu-scrim {
 
 .photo-card:hover {
   transform: rotate(0deg) translateY(-3px);
-  box-shadow: 0 22px 38px rgba(132, 66, 103, 0.22);
+  box-shadow: 0 6px 16px rgba(95, 57, 80, 0.1);
 }
 
 .photo-card:nth-child(4n + 1) { --tilt: -3.8deg; }
@@ -1178,6 +1151,27 @@ body.menu-open .menu-scrim {
   display: block;
   border-radius: 0.2rem;
   background: #f6dbe7;
+}
+
+.thumb-copy {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.thumb-file {
+  font-size: 0.82rem;
+  color: #8d5f73;
+  word-break: break-word;
+}
+
+.danger-button {
+  width: 100%;
+  justify-content: center;
+  background: #8f3159;
+}
+
+.danger-button:hover {
+  background: #7d274d;
 }
 
 .photo-card-empty {

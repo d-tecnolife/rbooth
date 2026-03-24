@@ -13,6 +13,7 @@ import (
 type Storage interface {
 	Save(ctx context.Context, key string, contentType string, payload []byte) error
 	Open(ctx context.Context, key string) (io.ReadCloser, string, error)
+	Delete(ctx context.Context, key string) error
 }
 
 func NewLocalStorage(root string) Storage {
@@ -47,6 +48,17 @@ func (s *LocalStorage) Open(_ context.Context, key string) (io.ReadCloser, strin
 		return nil, "", err
 	}
 	return file, mime.TypeByExtension(filepath.Ext(target)), nil
+}
+
+func (s *LocalStorage) Delete(_ context.Context, key string) error {
+	target, err := s.pathFor(key)
+	if err != nil {
+		return err
+	}
+	if err := os.Remove(target); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("delete local storage object: %w", err)
+	}
+	return nil
 }
 
 func (s *LocalStorage) pathFor(key string) (string, error) {

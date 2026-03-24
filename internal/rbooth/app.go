@@ -3,8 +3,6 @@ package rbooth
 import (
 	"bytes"
 	"context"
-	"crypto/rand"
-	"encoding/base32"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -21,6 +19,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -30,9 +29,11 @@ import (
 )
 
 type Config struct {
-	BaseURL    string
-	DataDir    string
-	StorageDir string
+	BaseURL       string
+	DataDir       string
+	StorageDir    string
+	AdminPassword string
+	AuthSecret    string
 }
 
 const singleBoardCode = "main-board"
@@ -45,10 +46,21 @@ type App struct {
 	storage   Storage
 	templates *template.Template
 
+	adminPassword string
+	authSecret    []byte
+
 	mu      sync.RWMutex
 	events  map[string]*Event
 	photos  map[string][]Photo
-	clients map[string]map[chan Photo]struct{}
+	clients map[string]map[chan streamEvent]struct{}
+
+	nextPhotoNumber int
+}
+
+type streamEvent struct {
+	Name  string
+	Photo Photo
+	ID    string
 }
 
 type Event struct {
@@ -78,9 +90,12 @@ type pageData struct {
 	Event       *Event
 	Photos      []Photo
 	CaptureURL  string
+	AccessURL   string
 	BoardURL    string
 	AdminURL    string
 	DefaultCode string
+	AuthError   string
+	Next        string
 }
 
 type samplePhotoSpec struct {
@@ -102,6 +117,12 @@ func New(cfg Config) (*App, error) {
 	if cfg.StorageDir == "" {
 		cfg.StorageDir = defaultStorageDir
 	}
+	if strings.TrimSpace(cfg.AdminPassword) == "" {
+		return nil, errors.New("admin password is required")
+	}
+	if strings.TrimSpace(cfg.AuthSecret) == "" {
+		return nil, errors.New("auth secret is required")
+	}
 
 	templates, err := template.ParseGlob(filepath.Join("web", "templates", "*.tmpl"))
 	if err != nil {
@@ -109,13 +130,15 @@ func New(cfg Config) (*App, error) {
 	}
 
 	app := &App{
-		baseURL:   strings.TrimRight(cfg.BaseURL, "/"),
-		dataDir:   cfg.DataDir,
-		storePath: filepath.Join(cfg.DataDir, "state.json"),
-		templates: templates,
-		events:    make(map[string]*Event),
-		photos:    make(map[string][]Photo),
-		clients:   make(map[string]map[chan Photo]struct{}),
+		baseURL:       strings.TrimRight(cfg.BaseURL, "/"),
+		dataDir:       cfg.DataDir,
+		storePath:     filepath.Join(cfg.DataDir, "state.json"),
+		templates:     templates,
+		adminPassword: strings.TrimSpace(cfg.AdminPassword),
+		authSecret:    []byte(strings.TrimSpace(cfg.AuthSecret)),
+		events:        make(map[string]*Event),
+		photos:        make(map[string][]Photo),
+		clients:       make(map[string]map[chan streamEvent]struct{}),
 	}
 
 	if err := os.MkdirAll(cfg.StorageDir, 0o755); err != nil {
@@ -127,11 +150,9 @@ func New(cfg Config) (*App, error) {
 	if err := app.loadState(); err != nil {
 		return nil, err
 	}
+	app.nextPhotoNumber = app.nextAvailablePhotoNumber()
 
 	app.ensureDefaultEvent()
-	if err := app.ensureSamplePhotos(); err != nil {
-		return nil, err
-	}
 
 	return app, nil
 }
@@ -139,20 +160,26 @@ func New(cfg Config) (*App, error) {
 func (a *App) Routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("web", "static")))))
-	mux.HandleFunc("GET /media/", a.handleMedia)
-	mux.HandleFunc("GET /{$}", a.handleHome)
-	mux.HandleFunc("GET /photos", a.handleBoard)
-	mux.HandleFunc("GET /capture", a.handleCapture)
-	mux.HandleFunc("GET /qr", a.handleQR)
-	mux.HandleFunc("GET /api/photos", a.handlePhotos)
-	mux.HandleFunc("POST /api/photos", a.handleUpload)
-	mux.HandleFunc("GET /stream", a.handleStream)
-	mux.HandleFunc("GET /board/{code}", redirectTo("/photos"))
-	mux.HandleFunc("GET /capture/{code}", redirectTo("/capture"))
-	mux.HandleFunc("GET /qr/{code}", redirectTo("/qr"))
-	mux.HandleFunc("GET /api/events/{code}/photos", a.handlePhotos)
-	mux.HandleFunc("POST /api/events/{code}/photos", a.handleUpload)
-	mux.HandleFunc("GET /events/{code}/stream", a.handleStream)
+	mux.Handle("GET /media/", a.requireGuest(http.HandlerFunc(a.handleMedia)))
+	mux.Handle("GET /{$}", a.requireGuest(http.HandlerFunc(a.handleHome)))
+	mux.Handle("GET /photos", a.requireGuest(http.HandlerFunc(a.handleBoard)))
+	mux.Handle("GET /capture", a.requireGuest(http.HandlerFunc(a.handleCapture)))
+	mux.Handle("GET /admin", a.requireAdmin(http.HandlerFunc(a.handleAdmin)))
+	mux.Handle("POST /admin/logout", a.requireAdmin(http.HandlerFunc(a.handleAdminLogout)))
+	mux.Handle("GET /qr", a.requireAdmin(http.HandlerFunc(a.handleQR)))
+	mux.HandleFunc("GET /admin/login", a.handleAdminLogin)
+	mux.HandleFunc("POST /admin/login", a.handleAdminLogin)
+	mux.Handle("GET /api/photos", a.requireGuest(http.HandlerFunc(a.handlePhotos)))
+	mux.Handle("POST /api/photos", a.requireGuest(http.HandlerFunc(a.handleUpload)))
+	mux.Handle("DELETE /api/photos/{id}", a.requireAdmin(http.HandlerFunc(a.handleDeletePhoto)))
+	mux.Handle("GET /stream", a.requireGuest(http.HandlerFunc(a.handleStream)))
+	mux.Handle("GET /board/{code}", a.requireGuest(redirectTo("/photos")))
+	mux.Handle("GET /capture/{code}", a.requireGuest(redirectTo("/capture")))
+	mux.Handle("GET /qr/{code}", a.requireAdmin(redirectTo("/qr")))
+	mux.Handle("GET /api/events/{code}/photos", a.requireGuest(http.HandlerFunc(a.handlePhotos)))
+	mux.Handle("POST /api/events/{code}/photos", a.requireGuest(http.HandlerFunc(a.handleUpload)))
+	mux.Handle("DELETE /api/events/{code}/photos/{id}", a.requireAdmin(http.HandlerFunc(a.handleDeletePhoto)))
+	mux.Handle("GET /events/{code}/stream", a.requireGuest(http.HandlerFunc(a.handleStream)))
 
 	return withLogging(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handler, pattern := mux.Handler(r)
@@ -216,6 +243,7 @@ func (a *App) handleAdmin(w http.ResponseWriter, r *http.Request) {
 		BaseURL:    a.baseURL,
 		Event:      event,
 		CaptureURL: a.captureURL(),
+		AccessURL:  a.publicCaptureURL(r),
 		BoardURL:   a.boardURL(),
 		AdminURL:   a.adminURL(),
 		Photos:     a.listAllPhotos(),
@@ -283,8 +311,10 @@ func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := time.Now().UTC().Format("20060102150405") + "-" + strings.ToLower(randomCode(5))
-	filename := id + ".jpg"
+	id := a.reservePhotoID()
+	rawCaption := strings.TrimSpace(r.FormValue("caption"))
+	caption := formatPhotoCaption(id, rawCaption)
+	filename := buildPhotoFilename(id, rawCaption)
 	storageKey := event.Code + "/" + filename
 	if err := a.storage.Save(r.Context(), storageKey, "image/jpeg", processed); err != nil {
 		http.Error(w, "failed to store image", http.StatusInternalServerError)
@@ -296,7 +326,7 @@ func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 		EventCode:   event.Code,
 		Filename:    filename,
 		StorageKey:  storageKey,
-		Caption:     strings.TrimSpace(r.FormValue("caption")),
+		Caption:     caption,
 		CreatedAt:   time.Now().UTC(),
 		DisplayURL:  "/media/" + storageKey,
 		FilterLabel: strings.TrimSpace(r.FormValue("filterLabel")),
@@ -315,6 +345,57 @@ func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, map[string]any{"photo": photo})
 }
 
+func (a *App) handleDeletePhoto(w http.ResponseWriter, r *http.Request) {
+	code := strings.TrimSpace(r.PathValue("code"))
+	if code == "" {
+		code = eventCodeFromRequestPath(r.URL.Path)
+	}
+	if code == "" {
+		code = singleBoardCode
+	}
+
+	id := strings.TrimSpace(r.PathValue("id"))
+	if id == "" {
+		id = photoIDFromRequestPath(r.URL.Path)
+	}
+	if id == "" {
+		http.Error(w, "photo id is required", http.StatusBadRequest)
+		return
+	}
+
+	photo, deleted, err := a.deletePhoto(r.Context(), code, id)
+	if err != nil {
+		http.Error(w, "failed to delete photo", http.StatusInternalServerError)
+		return
+	}
+	if !deleted {
+		http.NotFound(w, r)
+		return
+	}
+
+	a.broadcastDelete(code, photo.ID)
+	writeJSON(w, http.StatusOK, map[string]any{"photo": photo, "deleted": true})
+}
+
+func eventCodeFromRequestPath(path string) string {
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+	if len(parts) >= 5 && parts[0] == "api" && parts[1] == "events" && parts[3] == "photos" {
+		return strings.TrimSpace(parts[2])
+	}
+	return ""
+}
+
+func photoIDFromRequestPath(path string) string {
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+	if len(parts) == 3 && parts[0] == "api" && parts[1] == "photos" {
+		return strings.TrimSpace(parts[2])
+	}
+	if len(parts) >= 5 && parts[0] == "api" && parts[1] == "events" && parts[3] == "photos" {
+		return strings.TrimSpace(parts[4])
+	}
+	return ""
+}
+
 func (a *App) handleStream(w http.ResponseWriter, r *http.Request) {
 	flusher, ok := w.(http.Flusher)
 	if !ok {
@@ -326,7 +407,7 @@ func (a *App) handleStream(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	updates := make(chan Photo, 8)
+	updates := make(chan streamEvent, 8)
 	a.addClient(singleBoardCode, updates)
 	defer a.removeClient(singleBoardCode, updates)
 
@@ -343,12 +424,12 @@ func (a *App) handleStream(w http.ResponseWriter, r *http.Request) {
 		case <-ticker.C:
 			fmt.Fprint(w, ": keepalive\n\n")
 			flusher.Flush()
-		case photo := <-updates:
-			payload, err := json.Marshal(map[string]any{"photo": photo})
+		case update := <-updates:
+			payload, err := json.Marshal(map[string]any{"photo": update.Photo, "id": update.ID})
 			if err != nil {
 				continue
 			}
-			fmt.Fprintf(w, "event: photo\ndata: %s\n\n", payload)
+			fmt.Fprintf(w, "event: %s\ndata: %s\n\n", update.Name, payload)
 			flusher.Flush()
 		}
 	}
@@ -430,17 +511,17 @@ func (a *App) listAllPhotos() []Photo {
 	return a.listPhotos(singleBoardCode)
 }
 
-func (a *App) addClient(code string, ch chan Photo) {
+func (a *App) addClient(code string, ch chan streamEvent) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
 	if a.clients[code] == nil {
-		a.clients[code] = make(map[chan Photo]struct{})
+		a.clients[code] = make(map[chan streamEvent]struct{})
 	}
 	a.clients[code][ch] = struct{}{}
 }
 
-func (a *App) removeClient(code string, ch chan Photo) {
+func (a *App) removeClient(code string, ch chan streamEvent) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
@@ -459,10 +540,90 @@ func (a *App) broadcast(code string, photo Photo) {
 
 	for ch := range a.clients[code] {
 		select {
-		case ch <- photo:
+		case ch <- streamEvent{Name: "photo", Photo: photo}:
 		default:
 		}
 	}
+}
+
+func (a *App) broadcastDelete(code, id string) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+
+	for ch := range a.clients[code] {
+		select {
+		case ch <- streamEvent{Name: "photo-delete", ID: id}:
+		default:
+		}
+	}
+}
+
+func (a *App) reservePhotoID() string {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	if a.nextPhotoNumber < 1 {
+		a.nextPhotoNumber = 1
+	}
+	id := strconv.Itoa(a.nextPhotoNumber)
+	a.nextPhotoNumber++
+	return id
+}
+
+func (a *App) nextAvailablePhotoNumber() int {
+	maxID := 0
+	for _, eventPhotos := range a.photos {
+		for _, photo := range eventPhotos {
+			id, err := strconv.Atoi(photo.ID)
+			if err != nil {
+				continue
+			}
+			if id > maxID {
+				maxID = id
+			}
+		}
+	}
+	return maxID + 1
+}
+
+func (a *App) deletePhoto(ctx context.Context, code, id string) (Photo, bool, error) {
+	a.mu.Lock()
+	photos := a.photos[code]
+	index := -1
+	var photo Photo
+	for i, candidate := range photos {
+		if candidate.ID == id {
+			index = i
+			photo = candidate
+			break
+		}
+	}
+	if index == -1 {
+		a.mu.Unlock()
+		return Photo{}, false, nil
+	}
+
+	updated := append([]Photo{}, photos[:index]...)
+	updated = append(updated, photos[index+1:]...)
+	a.photos[code] = updated
+	a.mu.Unlock()
+
+	if err := a.saveState(); err != nil {
+		a.mu.Lock()
+		restore := append([]Photo{}, a.photos[code]...)
+		if index > len(restore) {
+			index = len(restore)
+		}
+		restore = append(restore[:index], append([]Photo{photo}, restore[index:]...)...)
+		a.photos[code] = restore
+		a.mu.Unlock()
+		return Photo{}, false, err
+	}
+
+	if err := a.storage.Delete(ctx, photo.StorageKey); err != nil {
+		log.Printf("failed to delete media for photo %s: %v", photo.ID, err)
+	}
+	return photo, true, nil
 }
 
 func (a *App) loadState() error {
@@ -662,32 +823,6 @@ func (a *App) adminURL() string {
 	return "/admin"
 }
 
-func (a *App) publicCaptureURL(r *http.Request) string {
-	return requestBaseURL(r, a.baseURL) + a.captureURL()
-}
-
-func requestBaseURL(r *http.Request, fallback string) string {
-	proto := strings.TrimSpace(r.Header.Get("X-Forwarded-Proto"))
-	if proto == "" {
-		if r.TLS != nil {
-			proto = "https"
-		} else {
-			proto = "http"
-		}
-	}
-
-	host := strings.TrimSpace(r.Header.Get("X-Forwarded-Host"))
-	if host == "" {
-		host = strings.TrimSpace(r.Host)
-	}
-
-	if host != "" {
-		return proto + "://" + host
-	}
-
-	return strings.TrimRight(fallback, "/")
-}
-
 func normalizeJPEG(payload []byte) ([]byte, error) {
 	img, _, err := image.Decode(bytes.NewReader(payload))
 	if err != nil {
@@ -831,13 +966,20 @@ func rgba(hex string) color.RGBA {
 	}
 }
 
-func randomCode(length int) string {
-	raw := make([]byte, length)
-	if _, err := rand.Read(raw); err != nil {
-		return "alpha"
+func formatPhotoCaption(id, caption string) string {
+	caption = strings.TrimSpace(caption)
+	if caption == "" {
+		caption = "Untitled"
 	}
-	encoded := base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(raw)
-	return encoded[:length]
+	return "#" + id + ". " + caption
+}
+
+func buildPhotoFilename(id, caption string) string {
+	slug := slugify(caption)
+	if slug == "" {
+		return id + ".jpg"
+	}
+	return id + "-" + slug + ".jpg"
 }
 
 func slugify(value string) string {

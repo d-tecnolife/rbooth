@@ -1,6 +1,0 @@
-{
-  "port": "8080",
-  "base_url": "http://localhost:8080",
-  "data_dir": "data",
-  "media_dir": "/mnt/storage/media/rbooth"
-}

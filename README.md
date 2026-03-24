@@ -4,9 +4,41 @@ A mobile website built with Golang that allows users to upload photos to a photo
 
 Configuration:
 
-- Copy `config.example.json` to `config.json` and update the values you need.
-- Set `media_dir` in `config.json` to choose where uploaded photos are stored.
-- `CONFIG_FILE` can point to a different JSON config file, and environment variables still override config values when set.
+- The app now uses environment variables as its runtime configuration source.
+- Set `APP_BASE_URL`, `ADMIN_PASSWORD`, and `AUTH_SECRET` in `.env` for Docker deployments.
+- `MEDIA_DIR` should stay mounted at `/mnt/storage/media/rbooth`.
+- Optional envs are `PORT` and `DATA_DIR`; defaults are `8080` and `data`.
+
+Docker deployment:
+
+- Build the container locally with `docker build -t rbooth .`.
+- For server deployment, copy `.env.example` to `.env` and set `APP_BASE_URL`, `ADMIN_PASSWORD`, and `AUTH_SECRET`.
+- `docker-compose.yml` mounts persistent app state at `./data` and the media volume at `/mnt/storage/media/rbooth`.
+- The compose service only binds to `127.0.0.1:${HOST_PORT}` so a local reverse proxy or tunnel can forward traffic to it.
+- The image is designed to run with env vars for secrets; do not depend on `config.json` in the container image.
+
+Recommended free event deployment:
+
+- For a short event, the simplest free option is Cloudflare Quick Tunnel.
+- Start the app container first with `docker compose up -d`.
+- Start a public tunnel to the local app with `cloudflared tunnel --url http://127.0.0.1:${HOST_PORT}`.
+- Cloudflare will print a random `https://*.trycloudflare.com` URL.
+- Update `.env` so `APP_BASE_URL` matches that exact URL.
+- Restart the app with `docker compose up -d` after changing `APP_BASE_URL` so QR generation uses the tunnel URL.
+- Open `/admin`, log in, and use the QR code there for guest access during the event.
+- Photos still stay on your local server at `/mnt/storage/media/rbooth`; only the web traffic is tunneled through Cloudflare.
+
+Quick Tunnel notes:
+
+- The URL is temporary and may change if the tunnel restarts.
+- This is fine for a single event, but not ideal for a permanent setup.
+- If you need the same public hostname every time, move to a paid domain or a named Cloudflare Tunnel later.
+
+CI/CD:
+
+- GitHub Actions runs `go test ./...` on every push and pull request via `.github/workflows/ci.yml`.
+- `.github/workflows/docker-publish.yml` builds and publishes the Docker image to `ghcr.io/d-tecnolife/rbooth`.
+- Pushes to the default branch publish `:latest` and `:sha-*` tags; other branches also publish branch-tagged images.
 
 Usage:
 

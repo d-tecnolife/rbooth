@@ -1,0 +1,18 @@
+services:
+  rbooth:
+    image: ghcr.io/d-tecnolife/rbooth:${RBOOTH_TAG:-latest}
+    container_name: rbooth
+    restart: unless-stopped
+    init: true
+    ports:
+      - "127.0.0.1:${HOST_PORT:-8080}:8080"
+    environment:
+      PORT: "8080"
+      APP_BASE_URL: "${APP_BASE_URL:?set APP_BASE_URL}"
+      DATA_DIR: "/app/data"
+      MEDIA_DIR: "/mnt/storage/media/rbooth"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:?set ADMIN_PASSWORD}"
+      AUTH_SECRET: "${AUTH_SECRET:?set AUTH_SECRET}"
+    volumes:
+      - ./data:/app/data
+      - /mnt/storage/media/rbooth:/mnt/storage/media/rbooth
