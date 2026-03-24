@@ -1,8 +1,0 @@
-{
-  "port": "8325",
-  "base_url": "http://localhost:8325",
-  "data_dir": "data",
-  "media_dir": "/mnt/storage/media/rbooth",
-  "admin_password": "placeholder",
-  "auth_secret": "replace_with_secret"
-}

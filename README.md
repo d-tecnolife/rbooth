@@ -1,12 +1,11 @@
 # rbooth
 
-A mobile website built with Golang that allows users to upload photos to a photoboard with live updates to see a collection of everyone's photos.
+A mobile website built with Golang and JavaScript that allows users to upload photos to a photoboard with live updates to see a collection of everyone's photos.
 
 Configuration:
 
-- The app now uses environment variables as its runtime configuration source.
 - Set `APP_BASE_URL`, `ADMIN_PASSWORD`, and `AUTH_SECRET` in `.env` for Docker deployments.
-- `MEDIA_DIR` should stay mounted at `/mnt/storage/media/rbooth`.
+- `MEDIA_DIR` may be changed to your media storage location.
 - Optional envs are `PORT` and `DATA_DIR`; defaults are `8080` and `data`.
 
 Docker deployment:
@@ -19,20 +18,9 @@ Docker deployment:
 
 Recommended free event deployment:
 
-- For a short event, the simplest free option is Cloudflare Quick Tunnel.
-- Start the app container first with `docker compose up -d`.
-- Start a public tunnel to the local app with `cloudflared tunnel --url http://127.0.0.1:${HOST_PORT}`.
-- Cloudflare will print a random `https://*.trycloudflare.com` URL.
-- Update `.env` so `APP_BASE_URL` matches that exact URL.
-- Restart the app with `docker compose up -d` after changing `APP_BASE_URL` so QR generation uses the tunnel URL.
+- Update `.env` so `APP_BASE_URL` matches your deployed URL.
+- Restart the app with `docker compose up -d` after changing `APP_BASE_URL` so QR generation uses the URL.
 - Open `/admin`, log in, and use the QR code there for guest access during the event.
-- Photos still stay on your local server at `/mnt/storage/media/rbooth`; only the web traffic is tunneled through Cloudflare.
-
-Quick Tunnel notes:
-
-- The URL is temporary and may change if the tunnel restarts.
-- This is fine for a single event, but not ideal for a permanent setup.
-- If you need the same public hostname every time, move to a paid domain or a named Cloudflare Tunnel later.
 
 CI/CD:
 
@@ -50,7 +38,7 @@ Usage:
 Implementation:
 
 - Picture taken will be temporarily cached on a server for image manipulation with local tool calls
-- Store photos on the locally mounted media volume at `/mnt/storage/media/rbooth` after editing/confirmation
+- Store photos on the locally mounted media volume after editing/confirmation
 - Application pulls photos from the mounted storage to display on the board
 
 Scope:
