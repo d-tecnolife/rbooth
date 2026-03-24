@@ -4,15 +4,14 @@ A mobile website built with Golang and JavaScript that allows users to upload ph
 
 Configuration:
 
-- Set `APP_BASE_URL`, `ADMIN_PASSWORD`, and `AUTH_SECRET` in `.env` for Docker deployments.
-- `MEDIA_DIR` may be changed to your media storage location.
+- Set `APP_NAME`, `APP_BASE_URL`, `ADMIN_PASSWORD`, and `AUTH_SECRET` in `.env` for Docker deployments.
 - Optional envs are `PORT` and `DATA_DIR`; defaults are `8080` and `data`.
 
 Docker deployment:
 
 - Build the container locally with `docker build -t rbooth .`.
-- For server deployment, copy `.env.example` to `.env` and set `APP_BASE_URL`, `ADMIN_PASSWORD`, and `AUTH_SECRET`.
-- `docker-compose.yml` mounts persistent app state at `./data` and the media volume at `/mnt/storage/media/rbooth`.
+- For server deployment, copy `.env.example` to `.env` and set `APP_NAME`, `APP_BASE_URL`, `ADMIN_PASSWORD`, and `AUTH_SECRET`.
+- `docker-compose.yml` mounts persistent app state at `./data` and maps the host media volume `/mnt/storage/media/rbooth` to `/app/media` in the container.
 - The compose service only binds to `127.0.0.1:${HOST_PORT}` so a local reverse proxy or tunnel can forward traffic to it.
 - The image is designed to run with env vars for secrets; do not depend on `config.json` in the container image.
 

@@ -18,7 +18,7 @@ if (boardShell) {
     card.innerHTML = `
       <img src="${photo.display_url}" alt="${photo.caption || ""}">
       <div class="photo-meta">
-        <strong>${photo.caption || "Fresh upload"}</strong>
+        <strong>${photo.caption || ""}</strong>
         <span>${new Date(photo.created_at).toLocaleTimeString()}</span>
       </div>
     `;

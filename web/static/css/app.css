@@ -174,7 +174,8 @@ label {
   color: #9e3e6f;
   font-family: "PP Neue Montreal", "Avenir Next", "Segoe UI", sans-serif;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
+  line-height: 1;
   box-shadow: none;
 }
 
@@ -184,12 +185,14 @@ label {
   font-weight: 700;
   color: #934869;
   font-size: 1.08rem;
+  text-transform: lowercase;
 }
 
 .brand-copy span {
   display: block;
   font-size: 0.8rem;
   color: var(--ink-soft);
+  text-transform: lowercase;
 }
 
 .nav-toggle {
@@ -257,6 +260,7 @@ body.menu-open .menu-scrim {
   background: rgba(255, 255, 255, 0.88);
   box-shadow: none;
   transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  text-transform: lowercase;
 }
 
 .nav-link-active {
@@ -271,6 +275,7 @@ body.menu-open .menu-scrim {
   background: rgba(255, 255, 255, 0.54);
   color: var(--ink-soft);
   line-height: 1.6;
+  text-transform: lowercase;
 }
 
 .compact-panel,
@@ -342,7 +347,7 @@ body.menu-open .menu-scrim {
   color: #a16d85;
   font-size: 0.72rem;
   letter-spacing: 0.22em;
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 
 .compact-title {
@@ -352,16 +357,17 @@ body.menu-open .menu-scrim {
   font-size: clamp(1.35rem, 3vw, 2rem);
   line-height: 1.05;
   color: #9d4672;
+  text-transform: lowercase;
 }
 
 .compact-copy,
 .lede,
 .admin-facts p,
-.thumb-card p,
 .info-card p {
   margin: 0;
   color: var(--ink-soft);
   line-height: 1.55;
+  text-transform: lowercase;
 }
 
 .compact-grid,
@@ -666,7 +672,7 @@ body.menu-open .menu-scrim {
   color: #9b4c74;
   font-size: 0.72rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 
 .upload-fallback {
@@ -733,7 +739,7 @@ body.menu-open .menu-scrim {
 .capture-page .brand-mark {
   width: 2.3rem;
   height: 2.3rem;
-  font-size: 1rem;
+  font-size: 1.15rem;
 }
 
 .capture-page .brand-copy strong {
@@ -936,7 +942,7 @@ body.menu-open .menu-scrim {
   margin: 0;
   font-size: 0.78rem;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: #9b5678;
 }
 
@@ -1076,7 +1082,7 @@ body.menu-open .menu-scrim {
   color: #884668;
   font-size: 0.82rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 
 .board-grid {
@@ -1158,6 +1164,19 @@ body.menu-open .menu-scrim {
   gap: 0.3rem;
 }
 
+.side-menu,
+.site-nav,
+.button-link,
+button,
+label,
+.section-head,
+.pinboard-header,
+.board-note,
+.board-rail,
+.notfound-panel {
+  text-transform: lowercase;
+}
+
 .thumb-file {
   font-size: 0.82rem;
   color: #8d5f73;
@@ -1235,7 +1254,7 @@ body.menu-open .menu-scrim {
   .capture-page .brand-mark {
     width: 2rem;
     height: 2rem;
-    font-size: 0.92rem;
+    font-size: 1.02rem;
   }
 
   .capture-page .brand-block {

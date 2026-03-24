@@ -11,12 +11,14 @@ import (
 func main() {
 	addr := envOr("PORT", "8080")
 	baseURL := envOr("APP_BASE_URL", "http://localhost:"+addr)
+	appName := envOr("APP_NAME", "rbooth")
 	dataDir := envOr("DATA_DIR", "data")
-	storageDir := envOr("MEDIA_DIR", "/mnt/storage/media/rbooth")
+	storageDir := envOr("MEDIA_DIR", "/app/media")
 	adminPassword := envOr("ADMIN_PASSWORD", "")
 	authSecret := envOr("AUTH_SECRET", "")
 
 	app, err := rbooth.New(rbooth.Config{
+		AppName:       appName,
 		BaseURL:       baseURL,
 		DataDir:       dataDir,
 		StorageDir:    storageDir,
@@ -32,7 +34,7 @@ func main() {
 		Handler: app.Routes(),
 	}
 
-	log.Printf("rbooth listening on %s", server.Addr)
+	log.Printf("%s listening on %s", appName, server.Addr)
 	log.Fatal(server.ListenAndServe())
 }
 

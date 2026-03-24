@@ -23,12 +23,14 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	"github.com/skip2/go-qrcode"
 	_ "golang.org/x/image/webp"
 )
 
 type Config struct {
+	AppName       string
 	BaseURL       string
 	DataDir       string
 	StorageDir    string
@@ -37,10 +39,12 @@ type Config struct {
 }
 
 const singleBoardCode = "main-board"
-const defaultStorageDir = "/mnt/storage/media/rbooth"
+const defaultStorageDir = "/app/media"
 
 type App struct {
 	baseURL   string
+	appName   string
+	appMark   string
 	dataDir   string
 	storePath string
 	storage   Storage
@@ -86,6 +90,8 @@ type persistedState struct {
 
 type pageData struct {
 	Title       string
+	AppName     string
+	AppMark     string
 	BaseURL     string
 	Event       *Event
 	Photos      []Photo
@@ -108,6 +114,10 @@ type samplePhotoSpec struct {
 }
 
 func New(cfg Config) (*App, error) {
+	cfg.AppName = strings.TrimSpace(cfg.AppName)
+	if cfg.AppName == "" {
+		cfg.AppName = "rbooth"
+	}
 	if cfg.BaseURL == "" {
 		return nil, errors.New("base url is required")
 	}
@@ -131,6 +141,8 @@ func New(cfg Config) (*App, error) {
 
 	app := &App{
 		baseURL:       strings.TrimRight(cfg.BaseURL, "/"),
+		appName:       cfg.AppName,
+		appMark:       appMark(cfg.AppName),
 		dataDir:       cfg.DataDir,
 		storePath:     filepath.Join(cfg.DataDir, "state.json"),
 		templates:     templates,
@@ -195,7 +207,7 @@ func (a *App) handleHome(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:      "rbooth",
+		Title:      a.appName,
 		BaseURL:    a.baseURL,
 		Event:      event,
 		CaptureURL: a.captureURL(),
@@ -210,7 +222,7 @@ func (a *App) handleCapture(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:      "Capture a Photo",
+		Title:      "Capture a photo | " + a.appName,
 		BaseURL:    a.baseURL,
 		Event:      event,
 		CaptureURL: a.captureURL(),
@@ -224,7 +236,7 @@ func (a *App) handleBoard(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:      "rbooth Board",
+		Title:      "Photo wall | " + a.appName,
 		BaseURL:    a.baseURL,
 		Event:      event,
 		CaptureURL: a.captureURL(),
@@ -239,7 +251,7 @@ func (a *App) handleAdmin(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:      "Board Admin",
+		Title:      "Admin | " + a.appName,
 		BaseURL:    a.baseURL,
 		Event:      event,
 		CaptureURL: a.captureURL(),
@@ -437,7 +449,7 @@ func (a *App) handleStream(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	data := pageData{
-		Title:      "Page Not Found",
+		Title:      "Page Not Found | " + a.appName,
 		BaseURL:    a.baseURL,
 		CaptureURL: a.captureURL(),
 		BoardURL:   a.boardURL(),
@@ -472,6 +484,16 @@ func (a *App) render(w http.ResponseWriter, name string, data any) {
 }
 
 func (a *App) renderStatus(w http.ResponseWriter, status int, name string, data any) {
+	switch value := data.(type) {
+	case pageData:
+		value.AppName = a.appName
+		value.AppMark = a.appMark
+		data = value
+	case *pageData:
+		value.AppName = a.appName
+		value.AppMark = a.appMark
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
 	if err := a.templates.ExecuteTemplate(w, name, data); err != nil {
@@ -969,7 +991,7 @@ func rgba(hex string) color.RGBA {
 func formatPhotoCaption(id, caption string) string {
 	caption = strings.TrimSpace(caption)
 	if caption == "" {
-		caption = "Untitled"
+		return ""
 	}
 	return "#" + id + ". " + caption
 }
@@ -1009,6 +1031,41 @@ func slugify(value string) string {
 		return result[:24]
 	}
 	return result
+}
+
+func appMark(name string) string {
+	parts := strings.Fields(strings.ToLower(name))
+	if len(parts) >= 2 {
+		var mark []rune
+		for _, part := range parts {
+			for _, r := range part {
+				if unicode.IsLetter(r) || unicode.IsDigit(r) {
+					mark = append(mark, r)
+					if len(mark) == 2 {
+						return string(mark)
+					}
+					break
+				}
+			}
+		}
+		if len(mark) > 0 {
+			return string(mark)
+		}
+	}
+
+	var mark []rune
+	for _, r := range strings.ToLower(name) {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			mark = append(mark, r)
+			if len(mark) == 2 {
+				return string(mark)
+			}
+		}
+	}
+	if len(mark) == 0 {
+		return "rb"
+	}
+	return string(mark)
 }
 
 func writeJSON(w http.ResponseWriter, status int, payload any) {

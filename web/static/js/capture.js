@@ -1,7 +1,8 @@
 const shell = document.querySelector(".shell-capture");
 
 if (shell) {
-  const DRAFT_STORAGE_KEY = "rbooth:capture-draft";
+  const appName = String(document.body?.dataset.appName || "rbooth").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const DRAFT_STORAGE_KEY = `${appName || "rbooth"}:capture-draft`;
   const captureEditor = document.querySelector("[data-capture-editor]");
   const toggleEditorButton = document.getElementById("toggleEditor");
   const preview = document.getElementById("preview");

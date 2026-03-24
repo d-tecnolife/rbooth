@@ -57,7 +57,7 @@ func (a *App) handleAdminLogin(w http.ResponseWriter, r *http.Request) {
 		}
 
 		a.render(w, "admin-login", pageData{
-			Title:      "Admin Login",
+			Title:      "Admin Login | " + a.appName,
 			BaseURL:    a.baseURL,
 			BoardURL:   a.boardURL(),
 			CaptureURL: a.captureURL(),
@@ -76,7 +76,7 @@ func (a *App) handleAdminLogin(w http.ResponseWriter, r *http.Request) {
 	next := sanitizeNextPath(r.FormValue("next"))
 	if subtle.ConstantTimeCompare([]byte(password), []byte(a.adminPassword)) != 1 {
 		a.renderStatus(w, http.StatusUnauthorized, "admin-login", pageData{
-			Title:      "Admin Login",
+			Title:      "Admin Login | " + a.appName,
 			BaseURL:    a.baseURL,
 			BoardURL:   a.boardURL(),
 			CaptureURL: a.captureURL(),

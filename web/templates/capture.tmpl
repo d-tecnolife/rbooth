@@ -7,14 +7,14 @@
   <title>{{ .Title }}</title>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
-<body class="capture-page">
+<body class="capture-page" data-app-name="{{ .AppName }}">
 <button class="menu-scrim" type="button" data-nav-scrim aria-label="Close menu"></button>
 <aside class="side-menu" aria-label="Site menu">
   <div class="side-menu-head">
     <div class="brand-block">
-      <div class="brand-mark">rb</div>
+      <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
-        <strong>rbooth</strong>
+        <strong>{{ .AppName }}</strong>
         <span>shared booth</span>
       </div>
     </div>
@@ -33,9 +33,9 @@
 <main class="shell shell-capture">
   <nav class="site-nav" aria-label="Primary">
     <div class="brand-block">
-      <div class="brand-mark">rb</div>
+      <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
-        <strong>rbooth</strong>
+        <strong>{{ .AppName }}</strong>
         <span>take a photo</span>
       </div>
     </div>
