@@ -1,4 +1,4 @@
-{{ define "home" }}
+{{ define "notfound" }}
 <!doctype html>
 <html lang="en">
 <head>
@@ -15,18 +15,17 @@
       <div class="brand-mark">rb</div>
       <div class="brand-copy">
         <strong>rbooth</strong>
-        <span>photo booth</span>
+        <span>photo board</span>
       </div>
     </div>
     <button type="button" data-nav-close>Close</button>
   </div>
   <div class="side-menu-links">
-    <a class="nav-link nav-link-active" href="/">Home</a>
-    <a class="nav-link" href="{{ .BoardURL }}">Photo wall</a>
+    <a class="nav-link" href="{{ .BoardURL }}">Photo board</a>
     <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
   </div>
   <div class="side-menu-meta">
-    <div class="menu-note">Scan in, capture a photo, and pin it onto the wall.</div>
+    <div class="menu-note">This page is missing, but the board and camera flow are still one tap away.</div>
   </div>
 </aside>
 
@@ -36,36 +35,40 @@
       <div class="brand-mark">rb</div>
       <div class="brand-copy">
         <strong>rbooth</strong>
-        <span>photo booth</span>
+        <span>live photo wall</span>
       </div>
     </div>
     <button class="nav-toggle" type="button" data-nav-open>Menu</button>
   </nav>
 
-  <section class="compact-panel">
-    <div class="notfound-panel">
-      <div class="notfound-copy">
-        <p class="eyebrow">Welcome</p>
-        <h1 class="compact-title">Placeholder welcome message.</h1>
-        <p class="compact-copy">This is where the custom welcome message will go.</p>
-      </div>
+  <section class="board-shell">
+    <div class="board-main">
+      <section class="compact-panel notfound-panel">
+        <div class="notfound-copy">
+          <p class="eyebrow">404</p>
+          <h1 class="compact-title">This page is not on the wall.</h1>
+          <p class="compact-copy">The link you opened does not exist here. You can jump back to the photo board or head straight to the capture page.</p>
+        </div>
+        <div class="board-links notfound-actions">
+          <a href="{{ .BoardURL }}">Go to photo board</a>
+          <a href="{{ .CaptureURL }}">Open capture page</a>
+        </div>
+      </section>
     </div>
-  </section>
 
-  <section class="compact-panel">
-    <div class="board-rail">
+    <aside class="board-rail">
       <div>
-        <p class="eyebrow">Scan to capture</p>
+        <p class="eyebrow">Quick capture</p>
         <img class="board-mini-qr" src="/qr" alt="QR code for opening the capture page">
       </div>
       <div class="board-note">
-        <h2>How to pin a photo</h2>
-        <p>1. Scan the QR code.</p>
-        <p>2. Open the capture page on your phone.</p>
-        <p>3. Take or upload a photo.</p>
-        <p>4. Pin it to the board.</p>
+        <h2>Need to add a photo?</h2>
+        <p>Scan the code or open the capture page, take a photo, then publish it straight onto the wall.</p>
       </div>
-    </div>
+      <div class="board-links">
+        <a href="{{ .CaptureURL }}">Open camera page</a>
+      </div>
+    </aside>
   </section>
 </main>
 

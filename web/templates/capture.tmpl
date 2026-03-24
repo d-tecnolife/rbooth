@@ -1,0 +1,197 @@
+{{ define "capture" }}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="capture-page">
+<button class="menu-scrim" type="button" data-nav-scrim aria-label="Close menu"></button>
+<aside class="side-menu" aria-label="Site menu">
+  <div class="side-menu-head">
+    <div class="brand-block">
+      <div class="brand-mark">rb</div>
+      <div class="brand-copy">
+        <strong>rbooth</strong>
+        <span>capture and publish</span>
+      </div>
+    </div>
+    <button type="button" data-nav-close>Close</button>
+  </div>
+  <div class="side-menu-links">
+    <a class="nav-link" href="/">Home</a>
+    <a class="nav-link" href="{{ .BoardURL }}">Photo board</a>
+    <a class="nav-link nav-link-active" href="{{ .CaptureURL }}">Take a photo</a>
+  </div>
+  <div class="side-menu-meta">
+    <div class="menu-note">Capture a photo, adjust the mood, and send it straight to the wall.</div>
+  </div>
+</aside>
+
+<main class="shell shell-capture">
+  <nav class="site-nav" aria-label="Primary">
+    <div class="brand-block">
+      <div class="brand-mark">rb</div>
+      <div class="brand-copy">
+        <strong>rbooth</strong>
+        <span>take a photo</span>
+      </div>
+    </div>
+    <button class="nav-toggle" type="button" data-nav-open>Menu</button>
+  </nav>
+
+  <section class="capture-editor" data-capture-editor>
+    <div class="capture-surface">
+      <div class="capture-overlay-actions">
+        <button id="pickPhoto" class="capture-icon-button capture-fab" type="button" aria-label="Capture or choose a photo">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8.2 5.5 9.5 4h5l1.3 1.5H19A2.5 2.5 0 0 1 21.5 8v8A2.5 2.5 0 0 1 19 18.5H5A2.5 2.5 0 0 1 2.5 16V8A2.5 2.5 0 0 1 5 5.5h3.2Zm3.8 2.8A4.8 4.8 0 1 0 12 18a4.8 4.8 0 0 0 0-9.7Zm0 2A2.8 2.8 0 1 1 12 16a2.8 2.8 0 0 1 0-5.7Z"/>
+          </svg>
+        </button>
+        <input id="photoInput" type="file" accept=".heic,.heif,.jpg,.jpeg,.png,.webp,.gif,image/heic,image/heif,image/jpeg,image/png,image/webp,image/gif" hidden>
+
+        <button id="toggleEditor" class="drawer-toggle" type="button" aria-expanded="false" aria-controls="uploadForm" aria-label="Open edit controls">
+          <span class="drawer-toggle-closed">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h10v2H4V7Zm0 8h16v2H4v-2Zm6-4h10v2H10v-2Z"/>
+            </svg>
+            <span>Edit</span>
+          </span>
+          <span class="drawer-toggle-open" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 12h12v2H6z"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      <div class="capture-stage">
+        <div class="camera-stack capture-preview-stack">
+          <button id="previewPlaceholder" class="preview-placeholder" type="button" aria-label="Capture or choose a photo">
+            <span class="preview-placeholder-badge">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8.2 5.5 9.5 4h5l1.3 1.5H19A2.5 2.5 0 0 1 21.5 8v8A2.5 2.5 0 0 1 19 18.5H5A2.5 2.5 0 0 1 2.5 16V8A2.5 2.5 0 0 1 5 5.5h3.2Zm3.8 2.8A4.8 4.8 0 1 0 12 18a4.8 4.8 0 0 0 0-9.7Zm0 2A2.8 2.8 0 1 1 12 16a2.8 2.8 0 0 1 0-5.7Z"/>
+              </svg>
+            </span>
+          </button>
+          <canvas id="preview" width="1080" height="1080" hidden></canvas>
+          <div id="previewFrame" class="preview-frame" hidden></div>
+          <div id="segmentationOverlay" class="processing-overlay" hidden>
+            <div class="processing-overlay-card">
+              <strong>Removing background…</strong>
+              <span>This can take a moment.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="capture-status">
+        <p id="statusMessage" class="status">Tap the camera icon to begin.</p>
+      </div>
+    </div>
+
+    <form id="uploadForm" class="editor-drawer" data-editor-drawer>
+      <div class="editor-drawer-head">
+        <div class="controls-head">
+          <h2>Edit</h2>
+        </div>
+      </div>
+
+      <section class="control-group">
+        <h3>Caption</h3>
+        <label>
+          Photo caption
+          <input type="text" name="caption" maxlength="60" placeholder="Optional caption">
+        </label>
+      </section>
+
+      <section class="control-group">
+        <h3>Background</h3>
+        <label>
+          Background style
+          <select name="backdrop">
+            <option value="none">No background</option>
+            <option value="sunrise">Sunrise</option>
+            <option value="mint">Mint</option>
+            <option value="night">Night</option>
+            <option value="paper">Paper</option>
+            <option value="studio">Studio</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="control-group">
+        <h3>Look</h3>
+        <label>
+          Tone
+          <select name="tone">
+            <option value="neutral">Neutral</option>
+            <option value="warm">Warm</option>
+            <option value="cool">Cool</option>
+            <option value="party">Party</option>
+          </select>
+        </label>
+
+        <label>
+          Frame
+          <select name="frame">
+            <option value="none">None</option>
+            <option value="classic">Classic border</option>
+            <option value="polaroid">Polaroid</option>
+            <option value="sparkle">Sparkle</option>
+            <option value="ticket">Ticket</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="control-group">
+        <h3>Adjustments</h3>
+        <label>
+          Brightness
+          <div class="slider-row">
+            <input type="range" name="brightness" min="40" max="180" value="100">
+            <output data-slider-value="brightness">100%</output>
+          </div>
+        </label>
+
+        <label>
+          Contrast
+          <div class="slider-row">
+            <input type="range" name="contrast" min="40" max="180" value="100">
+            <output data-slider-value="contrast">100%</output>
+          </div>
+        </label>
+
+        <label>
+          Saturation
+          <div class="slider-row">
+            <input type="range" name="saturation" min="0" max="220" value="100">
+            <output data-slider-value="saturation">100%</output>
+          </div>
+        </label>
+
+        <label>
+          Grayscale
+          <div class="slider-row">
+            <input type="range" name="grayscale" min="0" max="100" value="0">
+            <output data-slider-value="grayscale">0%</output>
+          </div>
+        </label>
+      </section>
+
+    </form>
+
+    <div class="capture-submit-bar">
+      <button id="resetEditor" type="button" class="button-secondary">Reset</button>
+      <button id="publishPhoto" type="submit" form="uploadForm" disabled>Pin to board</button>
+    </div>
+  </section>
+</main>
+
+<script src="/static/js/nav.js" defer></script>
+<script src="/static/js/capture.js" defer></script>
+</body>
+</html>
+{{ end }}

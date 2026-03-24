@@ -2,6 +2,12 @@
 
 A mobile website built with Golang that allows users to upload photos to a photoboard with live updates to see a collection of everyone's photos.
 
+Configuration:
+
+- Copy `config.example.json` to `config.json` and update the values you need.
+- Set `media_dir` in `config.json` to choose where uploaded photos are stored.
+- `CONFIG_FILE` can point to a different JSON config file, and environment variables still override config values when set.
+
 Usage:
 
 - Scan a QR code that links to the site
@@ -11,9 +17,9 @@ Usage:
 
 Implementation:
 
-- Picture taken will be temporarily cached on a server for image manipulation with either local or cloud tool calls
-- Store photos in cloud storage (Google Drive, Azure, AWS) after editing/confirmation
-- Application pulls photos from the storage to display on the board
+- Picture taken will be temporarily cached on a server for image manipulation with local tool calls
+- Store photos on the locally mounted media volume at `/mnt/storage/media/rbooth` after editing/confirmation
+- Application pulls photos from the mounted storage to display on the board
 
 Scope:
 

@@ -22,7 +22,7 @@
   </div>
   <div class="side-menu-links">
     <a class="nav-link" href="{{ .BoardURL }}">Photo board</a>
-    <a class="nav-link" href="{{ .JoinURL }}">Take a photo</a>
+    <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
     <a class="nav-link nav-link-active" href="{{ .AdminURL }}">Host tools</a>
   </div>
   <div class="side-menu-meta">
@@ -50,7 +50,7 @@
         <p class="compact-copy">Use this page for QR access, board links, and a quick status check while the photo wall stays on the main display.</p>
       </div>
       <div class="admin-actions">
-        <a class="button-link" href="{{ .JoinURL }}">Open camera page</a>
+        <a class="button-link" href="{{ .CaptureURL }}">Open camera page</a>
         <a class="button-link" href="{{ .BoardURL }}">Open photo wall</a>
       </div>
     </div>
@@ -59,10 +59,10 @@
   <section class="admin-grid">
     <article class="card info-card">
       <h2>QR and links</h2>
-      <img class="qr-image" src="/qr" alt="QR code for the shared board join page">
+      <img class="qr-image" src="/qr" alt="QR code for the shared board capture page">
       <label>
-        Join URL
-        <input type="text" value="{{ .JoinURL }}" readonly>
+        Capture URL
+        <input type="text" value="{{ .CaptureURL }}" readonly>
       </label>
       <label>
         Board URL

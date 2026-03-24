@@ -26,20 +26,23 @@ import (
 	"time"
 
 	"github.com/skip2/go-qrcode"
+	_ "golang.org/x/image/webp"
 )
 
 type Config struct {
-	BaseURL string
-	DataDir string
+	BaseURL    string
+	DataDir    string
+	StorageDir string
 }
 
 const singleBoardCode = "main-board"
+const defaultStorageDir = "/mnt/storage/media/rbooth"
 
 type App struct {
 	baseURL   string
 	dataDir   string
-	uploadDir string
 	storePath string
+	storage   Storage
 	templates *template.Template
 
 	mu      sync.RWMutex
@@ -57,6 +60,7 @@ type Photo struct {
 	ID          string    `json:"id"`
 	EventCode   string    `json:"event_code"`
 	Filename    string    `json:"filename"`
+	StorageKey  string    `json:"storage_key,omitempty"`
 	Caption     string    `json:"caption"`
 	CreatedAt   time.Time `json:"created_at"`
 	DisplayURL  string    `json:"display_url"`
@@ -73,7 +77,7 @@ type pageData struct {
 	BaseURL     string
 	Event       *Event
 	Photos      []Photo
-	JoinURL     string
+	CaptureURL  string
 	BoardURL    string
 	AdminURL    string
 	DefaultCode string
@@ -95,6 +99,9 @@ func New(cfg Config) (*App, error) {
 	if cfg.DataDir == "" {
 		cfg.DataDir = "data"
 	}
+	if cfg.StorageDir == "" {
+		cfg.StorageDir = defaultStorageDir
+	}
 
 	templates, err := template.ParseGlob(filepath.Join("web", "templates", "*.tmpl"))
 	if err != nil {
@@ -104,7 +111,6 @@ func New(cfg Config) (*App, error) {
 	app := &App{
 		baseURL:   strings.TrimRight(cfg.BaseURL, "/"),
 		dataDir:   cfg.DataDir,
-		uploadDir: filepath.Join(cfg.DataDir, "uploads"),
 		storePath: filepath.Join(cfg.DataDir, "state.json"),
 		templates: templates,
 		events:    make(map[string]*Event),
@@ -112,9 +118,11 @@ func New(cfg Config) (*App, error) {
 		clients:   make(map[string]map[chan Photo]struct{}),
 	}
 
-	if err := os.MkdirAll(app.uploadDir, 0o755); err != nil {
-		return nil, fmt.Errorf("create upload dir: %w", err)
+	if err := os.MkdirAll(cfg.StorageDir, 0o755); err != nil {
+		return nil, fmt.Errorf("create upload root: %w", err)
 	}
+
+	app.storage = NewLocalStorage(cfg.StorageDir)
 
 	if err := app.loadState(); err != nil {
 		return nil, err
@@ -131,50 +139,71 @@ func New(cfg Config) (*App, error) {
 func (a *App) Routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("web", "static")))))
-	mux.Handle("GET /media/", http.StripPrefix("/media/", http.FileServer(http.Dir(a.uploadDir))))
-	mux.HandleFunc("GET /", a.handleBoard)
-	mux.HandleFunc("GET /join", a.handleJoin)
-	mux.HandleFunc("GET /admin", a.handleAdmin)
+	mux.HandleFunc("GET /media/", a.handleMedia)
+	mux.HandleFunc("GET /{$}", a.handleHome)
+	mux.HandleFunc("GET /photos", a.handleBoard)
+	mux.HandleFunc("GET /capture", a.handleCapture)
 	mux.HandleFunc("GET /qr", a.handleQR)
 	mux.HandleFunc("GET /api/photos", a.handlePhotos)
 	mux.HandleFunc("POST /api/photos", a.handleUpload)
 	mux.HandleFunc("GET /stream", a.handleStream)
-	mux.HandleFunc("GET /board/{code}", redirectTo("/"))
-	mux.HandleFunc("GET /join/{code}", redirectTo("/join"))
-	mux.HandleFunc("GET /admin/{code}", redirectTo("/admin"))
+	mux.HandleFunc("GET /board/{code}", redirectTo("/photos"))
+	mux.HandleFunc("GET /capture/{code}", redirectTo("/capture"))
 	mux.HandleFunc("GET /qr/{code}", redirectTo("/qr"))
 	mux.HandleFunc("GET /api/events/{code}/photos", a.handlePhotos)
 	mux.HandleFunc("POST /api/events/{code}/photos", a.handleUpload)
 	mux.HandleFunc("GET /events/{code}/stream", a.handleStream)
 
-	return withLogging(mux)
+	return withLogging(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handler, pattern := mux.Handler(r)
+		if pattern == "" {
+			a.handleNotFound(w, r)
+			return
+		}
+		handler.ServeHTTP(w, r)
+	}))
 }
 
-func (a *App) handleJoin(w http.ResponseWriter, r *http.Request) {
+func (a *App) handleHome(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:    "Join the Board",
-		BaseURL:  a.baseURL,
-		Event:    event,
-		JoinURL:  a.joinURL(),
-		BoardURL: a.boardURL(),
-		AdminURL: a.adminURL(),
+		Title:      "rbooth",
+		BaseURL:    a.baseURL,
+		Event:      event,
+		CaptureURL: a.captureURL(),
+		BoardURL:   a.boardURL(),
+		AdminURL:   a.adminURL(),
+		Photos:     a.listAllPhotos(),
 	}
-	a.render(w, "join", data)
+	a.render(w, "home", data)
+}
+
+func (a *App) handleCapture(w http.ResponseWriter, r *http.Request) {
+	event := a.singleEvent()
+
+	data := pageData{
+		Title:      "Capture a Photo",
+		BaseURL:    a.baseURL,
+		Event:      event,
+		CaptureURL: a.captureURL(),
+		BoardURL:   a.boardURL(),
+		AdminURL:   a.adminURL(),
+	}
+	a.render(w, "capture", data)
 }
 
 func (a *App) handleBoard(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:    "rbooth Board",
-		BaseURL:  a.baseURL,
-		Event:    event,
-		JoinURL:  a.joinURL(),
-		BoardURL: a.boardURL(),
-		AdminURL: a.adminURL(),
-		Photos:   a.listAllPhotos(),
+		Title:      "rbooth Board",
+		BaseURL:    a.baseURL,
+		Event:      event,
+		CaptureURL: a.captureURL(),
+		BoardURL:   a.boardURL(),
+		AdminURL:   a.adminURL(),
+		Photos:     a.listAllPhotos(),
 	}
 	a.render(w, "board", data)
 }
@@ -183,19 +212,19 @@ func (a *App) handleAdmin(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:    "Board Admin",
-		BaseURL:  a.baseURL,
-		Event:    event,
-		JoinURL:  a.joinURL(),
-		BoardURL: a.boardURL(),
-		AdminURL: a.adminURL(),
-		Photos:   a.listAllPhotos(),
+		Title:      "Board Admin",
+		BaseURL:    a.baseURL,
+		Event:      event,
+		CaptureURL: a.captureURL(),
+		BoardURL:   a.boardURL(),
+		AdminURL:   a.adminURL(),
+		Photos:     a.listAllPhotos(),
 	}
 	a.render(w, "admin", data)
 }
 
 func (a *App) handleQR(w http.ResponseWriter, r *http.Request) {
-	png, err := qrcode.Encode(a.joinURL(), qrcode.Medium, 320)
+	png, err := qrcode.Encode(a.publicCaptureURL(r), qrcode.Medium, 320)
 	if err != nil {
 		http.Error(w, "failed to generate qr", http.StatusInternalServerError)
 		return
@@ -214,6 +243,7 @@ func (a *App) handlePhotos(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
+	const maxUploadSize = 6 << 20
 
 	if err := r.ParseMultipartForm(8 << 20); err != nil {
 		http.Error(w, "failed to parse upload", http.StatusBadRequest)
@@ -227,22 +257,23 @@ func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	contentType := header.Header.Get("Content-Type")
-	if contentType == "" {
-		contentType = mime.TypeByExtension(filepath.Ext(header.Filename))
-	}
-	if !strings.HasPrefix(contentType, "image/") {
-		http.Error(w, "only image uploads are supported", http.StatusBadRequest)
-		return
-	}
-
-	payload, err := io.ReadAll(io.LimitReader(file, 6<<20))
+	payload, err := io.ReadAll(io.LimitReader(file, maxUploadSize+1))
 	if err != nil {
 		http.Error(w, "failed to read upload", http.StatusBadRequest)
 		return
 	}
 	if len(payload) == 0 {
 		http.Error(w, "upload was empty", http.StatusBadRequest)
+		return
+	}
+	if len(payload) > maxUploadSize {
+		http.Error(w, "image exceeded the 6 MB limit", http.StatusBadRequest)
+		return
+	}
+
+	contentType := sniffImageContentType(payload, header.Filename, header.Header.Get("Content-Type"))
+	if !isAllowedImageType(contentType) {
+		http.Error(w, "unsupported image type", http.StatusBadRequest)
 		return
 	}
 
@@ -254,14 +285,8 @@ func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	id := time.Now().UTC().Format("20060102150405") + "-" + strings.ToLower(randomCode(5))
 	filename := id + ".jpg"
-	eventDir := filepath.Join(a.uploadDir, event.Code)
-	if err := os.MkdirAll(eventDir, 0o755); err != nil {
-		http.Error(w, "failed to create event storage", http.StatusInternalServerError)
-		return
-	}
-
-	targetPath := filepath.Join(eventDir, filename)
-	if err := os.WriteFile(targetPath, processed, 0o644); err != nil {
+	storageKey := event.Code + "/" + filename
+	if err := a.storage.Save(r.Context(), storageKey, "image/jpeg", processed); err != nil {
 		http.Error(w, "failed to store image", http.StatusInternalServerError)
 		return
 	}
@@ -270,9 +295,10 @@ func (a *App) handleUpload(w http.ResponseWriter, r *http.Request) {
 		ID:          id,
 		EventCode:   event.Code,
 		Filename:    filename,
+		StorageKey:  storageKey,
 		Caption:     strings.TrimSpace(r.FormValue("caption")),
 		CreatedAt:   time.Now().UTC(),
-		DisplayURL:  "/media/" + event.Code + "/" + filename,
+		DisplayURL:  "/media/" + storageKey,
 		FilterLabel: strings.TrimSpace(r.FormValue("filterLabel")),
 	}
 
@@ -328,8 +354,45 @@ func (a *App) handleStream(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (a *App) handleNotFound(w http.ResponseWriter, r *http.Request) {
+	data := pageData{
+		Title:      "Page Not Found",
+		BaseURL:    a.baseURL,
+		CaptureURL: a.captureURL(),
+		BoardURL:   a.boardURL(),
+		AdminURL:   a.adminURL(),
+	}
+	a.renderStatus(w, http.StatusNotFound, "notfound", data)
+}
+
+func (a *App) handleMedia(w http.ResponseWriter, r *http.Request) {
+	objectKey := strings.TrimPrefix(r.URL.Path, "/media/")
+	if objectKey == "" {
+		http.NotFound(w, r)
+		return
+	}
+
+	reader, contentType, err := a.storage.Open(r.Context(), objectKey)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	defer reader.Close()
+
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+	w.Header().Set("Content-Type", contentType)
+	_, _ = io.Copy(w, reader)
+}
+
 func (a *App) render(w http.ResponseWriter, name string, data any) {
+	a.renderStatus(w, http.StatusOK, name, data)
+}
+
+func (a *App) renderStatus(w http.ResponseWriter, status int, name string, data any) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(status)
 	if err := a.templates.ExecuteTemplate(w, name, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -421,6 +484,12 @@ func (a *App) loadState() error {
 		a.events[event.Code] = &copyEvent
 	}
 	for _, photo := range state.Photos {
+		if photo.StorageKey == "" && photo.EventCode != "" && photo.Filename != "" {
+			photo.StorageKey = photo.EventCode + "/" + photo.Filename
+		}
+		if photo.DisplayURL == "" && photo.StorageKey != "" {
+			photo.DisplayURL = "/media/" + photo.StorageKey
+		}
 		a.photos[photo.EventCode] = append(a.photos[photo.EventCode], photo)
 	}
 
@@ -516,11 +585,6 @@ func (a *App) ensureSamplePhotos() error {
 		{Filename: "sample-dream-club.jpg", Caption: "Dream club", Filter: "neutral/paper", Primary: rgba("#fce1f0"), Secondary: rgba("#dfe7fd"), Accent: rgba("#cdeac0")},
 	}
 
-	eventDir := filepath.Join(a.uploadDir, singleBoardCode)
-	if err := os.MkdirAll(eventDir, 0o755); err != nil {
-		return fmt.Errorf("create sample upload dir: %w", err)
-	}
-
 	created := false
 	for index, sample := range samples {
 		if _, ok := existingByFile[sample.Filename]; ok {
@@ -532,8 +596,8 @@ func (a *App) ensureSamplePhotos() error {
 			return err
 		}
 
-		targetPath := filepath.Join(eventDir, sample.Filename)
-		if err := os.WriteFile(targetPath, payload, 0o644); err != nil {
+		storageKey := singleBoardCode + "/" + sample.Filename
+		if err := a.storage.Save(context.Background(), storageKey, "image/jpeg", payload); err != nil {
 			return fmt.Errorf("write sample photo: %w", err)
 		}
 
@@ -541,9 +605,10 @@ func (a *App) ensureSamplePhotos() error {
 			ID:          fmt.Sprintf("sample-%02d", index+1),
 			EventCode:   singleBoardCode,
 			Filename:    sample.Filename,
+			StorageKey:  storageKey,
 			Caption:     sample.Caption,
 			CreatedAt:   time.Now().UTC().Add(-time.Duration(len(samples)-index) * time.Minute),
-			DisplayURL:  "/media/" + singleBoardCode + "/" + sample.Filename,
+			DisplayURL:  "/media/" + storageKey,
 			FilterLabel: sample.Filter,
 		}
 
@@ -585,16 +650,42 @@ func (a *App) singleEvent() *Event {
 	return &copyEvent
 }
 
-func (a *App) joinURL() string {
-	return a.baseURL + "/join"
+func (a *App) captureURL() string {
+	return "/capture"
 }
 
 func (a *App) boardURL() string {
-	return a.baseURL + "/"
+	return "/photos"
 }
 
 func (a *App) adminURL() string {
-	return a.baseURL + "/admin"
+	return "/admin"
+}
+
+func (a *App) publicCaptureURL(r *http.Request) string {
+	return requestBaseURL(r, a.baseURL) + a.captureURL()
+}
+
+func requestBaseURL(r *http.Request, fallback string) string {
+	proto := strings.TrimSpace(r.Header.Get("X-Forwarded-Proto"))
+	if proto == "" {
+		if r.TLS != nil {
+			proto = "https"
+		} else {
+			proto = "http"
+		}
+	}
+
+	host := strings.TrimSpace(r.Header.Get("X-Forwarded-Host"))
+	if host == "" {
+		host = strings.TrimSpace(r.Host)
+	}
+
+	if host != "" {
+		return proto + "://" + host
+	}
+
+	return strings.TrimRight(fallback, "/")
 }
 
 func normalizeJPEG(payload []byte) ([]byte, error) {
@@ -603,17 +694,44 @@ func normalizeJPEG(payload []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	bounds := img.Bounds()
-	const maxDimension = 1600
-	if bounds.Dx() > maxDimension || bounds.Dy() > maxDimension {
-		img = resizeNearest(img, maxDimension)
-	}
-
 	var buffer bytes.Buffer
 	if err := jpeg.Encode(&buffer, img, &jpeg.Options{Quality: 85}); err != nil {
 		return nil, err
 	}
 	return buffer.Bytes(), nil
+}
+
+func sniffImageContentType(payload []byte, filename string, declared string) string {
+	sniffLength := len(payload)
+	if sniffLength > 512 {
+		sniffLength = 512
+	}
+	contentType := strings.ToLower(strings.TrimSpace(http.DetectContentType(payload[:sniffLength])))
+	if semi := strings.Index(contentType, ";"); semi >= 0 {
+		contentType = contentType[:semi]
+	}
+	if contentType != "application/octet-stream" {
+		return contentType
+	}
+
+	declared = strings.ToLower(strings.TrimSpace(declared))
+	if semi := strings.Index(declared, ";"); semi >= 0 {
+		declared = declared[:semi]
+	}
+	if declared != "" {
+		return declared
+	}
+
+	return strings.ToLower(mime.TypeByExtension(filepath.Ext(filename)))
+}
+
+func isAllowedImageType(contentType string) bool {
+	switch contentType {
+	case "image/jpeg", "image/png", "image/gif", "image/webp", "image/heic", "image/heif":
+		return true
+	default:
+		return false
+	}
 }
 
 func generateSamplePhoto(sample samplePhotoSpec) ([]byte, error) {
@@ -711,38 +829,6 @@ func rgba(hex string) color.RGBA {
 		B: parse(hex[5])<<4 | parse(hex[6]),
 		A: 255,
 	}
-}
-
-func resizeNearest(src image.Image, maxDimension int) image.Image {
-	bounds := src.Bounds()
-	width := bounds.Dx()
-	height := bounds.Dy()
-	if width <= maxDimension && height <= maxDimension {
-		return src
-	}
-
-	scale := float64(maxDimension) / float64(width)
-	if height > width {
-		scale = float64(maxDimension) / float64(height)
-	}
-	newWidth := int(float64(width) * scale)
-	newHeight := int(float64(height) * scale)
-	if newWidth < 1 {
-		newWidth = 1
-	}
-	if newHeight < 1 {
-		newHeight = 1
-	}
-
-	dst := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
-	for y := 0; y < newHeight; y++ {
-		srcY := bounds.Min.Y + int(float64(y)*float64(height)/float64(newHeight))
-		for x := 0; x < newWidth; x++ {
-			srcX := bounds.Min.X + int(float64(x)*float64(width)/float64(newWidth))
-			dst.Set(x, y, src.At(srcX, srcY))
-		}
-	}
-	return dst
 }
 
 func randomCode(length int) string {

@@ -21,12 +21,12 @@
     <button type="button" data-nav-close>Close</button>
   </div>
   <div class="side-menu-links">
+    <a class="nav-link" href="/">Home</a>
     <a class="nav-link nav-link-active" href="{{ .BoardURL }}">Photo board</a>
-    <a class="nav-link" href="{{ .JoinURL }}">Take a photo</a>
-    <a class="nav-link" href="{{ .AdminURL }}">Host tools</a>
+    <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
   </div>
   <div class="side-menu-meta">
-    <div class="menu-note">The board is the focus here, so the navigation lives off-canvas and the wall gets the screen first.</div>
+    <div class="menu-note">Open the camera page to add another print to the wall.</div>
   </div>
 </aside>
 
@@ -46,8 +46,7 @@
     <div class="board-main">
       <div class="pinboard-frame">
         <div class="pinboard-header">
-          <span>Moments pinned up</span>
-          <span>{{ len .Photos }} prints on the wall</span>
+          <span>{{ len .Photos }} photos pinned on the board</span>
         </div>
         <div id="boardGrid" class="board-grid">
         {{ range .Photos }}
@@ -68,35 +67,7 @@
         {{ end }}
         </div>
       </div>
-
-      <section class="board-topbar">
-        <div class="board-topbar-copy">
-          <p class="eyebrow">Live memory board</p>
-          <h1 class="compact-title">A pinned-photo wall, not a text-heavy landing page.</h1>
-          <p>Guests scan, snap, and publish. The board keeps building live like a real corkboard of prints.</p>
-        </div>
-        <div class="mini-chips">
-          <span>Live updates</span>
-          <span>Real-board feel</span>
-          <span>Shared screen ready</span>
-        </div>
-      </section>
     </div>
-
-    <aside class="board-rail">
-      <div>
-        <p class="eyebrow">Quick join</p>
-        <img class="board-mini-qr" src="/qr" alt="QR code for joining the booth">
-      </div>
-      <div class="board-note">
-        <h2>Guest flow</h2>
-        <p>Scan the code, take or upload a photo, then publish it straight onto the wall.</p>
-      </div>
-      <div class="board-links">
-        <a href="{{ .JoinURL }}">Open camera page</a>
-        <a href="{{ .AdminURL }}">Show host tools</a>
-      </div>
-    </aside>
   </section>
 </main>
 
