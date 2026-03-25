@@ -45,13 +45,13 @@
         <div class="pinboard-header">
           <span id="boardCount">{{ len .Photos }} photos pinned on the wall</span>
         </div>
-        <div id="boardGrid" class="board-grid" data-empty-title="{{ .Personalization.BoardEmptyTitle }}" data-empty-body="{{ .Personalization.BoardEmptyBody }}">
+        <div id="boardGrid" class="board-grid" data-empty-title="{{ .Personalization.BoardEmptyTitle }}" data-empty-body="{{ .Personalization.BoardEmptyBody }}" data-timezone="{{ .DisplayTimeZone }}">
         {{ range .Photos }}
         <article class="photo-card" data-photo-id="{{ .ID }}">
           <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
           <div class="photo-meta">
             <strong class="photo-caption">{{ .Caption }}</strong>
-            <span>{{ .CreatedAt.Format "15:04:05 UTC" }}</span>
+            <span>{{ displayTime .CreatedAt }}</span>
           </div>
         </article>
         {{ else }}

@@ -34,6 +34,7 @@ type Config struct {
 	BaseURL         string
 	DataDir         string
 	StorageDir      string
+	DisplayTimeZone string
 	Personalization Personalization
 	AdminPassword   string
 	AuthSecret      string
@@ -48,6 +49,7 @@ type App struct {
 	appMark         string
 	dataDir         string
 	storePath       string
+	displayTimeZone string
 	storage         Storage
 	templates       *template.Template
 	personalization Personalization
@@ -96,6 +98,7 @@ type pageData struct {
 	AppName           string
 	AppMark           string
 	BaseURL           string
+	DisplayTimeZone   string
 	Event             *Event
 	Photos            []Photo
 	BackdropOptions   []captureOption
@@ -134,6 +137,7 @@ func New(cfg Config) (*App, error) {
 	if cfg.StorageDir == "" {
 		cfg.StorageDir = defaultStorageDir
 	}
+	location, resolvedTimeZone := loadDisplayLocation(cfg.DisplayTimeZone)
 	if strings.TrimSpace(cfg.AdminPassword) == "" {
 		return nil, errors.New("admin password is required")
 	}
@@ -141,7 +145,14 @@ func New(cfg Config) (*App, error) {
 		return nil, errors.New("auth secret is required")
 	}
 
-	templates, err := template.ParseGlob(filepath.Join("web", "templates", "*.tmpl"))
+	templates, err := template.New("").Funcs(template.FuncMap{
+		"displayTime": func(value time.Time) string {
+			return formatDisplayTime(value, location)
+		},
+		"displayDateTime": func(value time.Time) string {
+			return formatDisplayDateTime(value, location)
+		},
+	}).ParseGlob(filepath.Join("web", "templates", "*.tmpl"))
 	if err != nil {
 		return nil, fmt.Errorf("parse templates: %w", err)
 	}
@@ -153,6 +164,7 @@ func New(cfg Config) (*App, error) {
 		appMark:         appMark(cfg.AppName),
 		dataDir:         cfg.DataDir,
 		storePath:       filepath.Join(cfg.DataDir, "state.json"),
+		displayTimeZone: resolvedTimeZone,
 		templates:       templates,
 		personalization: cfg.Personalization,
 		adminPassword:   strings.TrimSpace(cfg.AdminPassword),
@@ -508,11 +520,13 @@ func (a *App) renderStatus(w http.ResponseWriter, status int, name string, data 
 	case pageData:
 		value.AppName = a.appName
 		value.AppMark = a.appMark
+		value.DisplayTimeZone = a.displayTimeZone
 		value.Personalization = a.personalization
 		data = value
 	case *pageData:
 		value.AppName = a.appName
 		value.AppMark = a.appMark
+		value.DisplayTimeZone = a.displayTimeZone
 		value.Personalization = a.personalization
 	}
 

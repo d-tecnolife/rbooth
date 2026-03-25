@@ -14,14 +14,16 @@ func main() {
 	appName := envOr("APP_NAME", "rbooth")
 	dataDir := envOr("DATA_DIR", "data")
 	storageDir := envOr("MEDIA_DIR", "/app/media")
+	displayTimeZone := envOr("DISPLAY_TIMEZONE", "UTC")
 	adminPassword := envOr("ADMIN_PASSWORD", "")
 	authSecret := envOr("AUTH_SECRET", "")
 
 	app, err := rbooth.New(rbooth.Config{
-		AppName:    appName,
-		BaseURL:    baseURL,
-		DataDir:    dataDir,
-		StorageDir: storageDir,
+		AppName:         appName,
+		BaseURL:         baseURL,
+		DataDir:         dataDir,
+		StorageDir:      storageDir,
+		DisplayTimeZone: displayTimeZone,
 		Personalization: rbooth.Personalization{
 			AppSubtitle:      os.Getenv("APP_SUBTITLE"),
 			HomeWelcomeTitle: os.Getenv("HOME_WELCOME_TITLE"),

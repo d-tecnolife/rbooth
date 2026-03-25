@@ -73,7 +73,7 @@
     <article class="card info-card">
       <h2>quick snapshot</h2>
       <div class="admin-facts">
-        <p><strong>started:</strong> {{ .Event.CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
+        <p><strong>started:</strong> {{ displayDateTime .Event.CreatedAt }}</p>
         <p><strong>photos on wall:</strong> <span id="adminPhotoCount">{{ len .Photos }}</span></p>
         <p><strong>guest flow:</strong> scan, snap, style, publish.</p>
         <p><strong>display tip:</strong> keep the wall on the biggest screen in the room.</p>

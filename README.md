@@ -5,6 +5,7 @@ A mobile website built with Golang and JavaScript that allows users to upload ph
 Configuration:
 
 - Set `APP_NAME`, `APP_BASE_URL`, `ADMIN_PASSWORD`, and `AUTH_SECRET` in `.env` for Docker deployments.
+- Set `DISPLAY_TIMEZONE` in `.env` if you want timestamps rendered in a specific timezone; the default is `UTC`.
 - Optional personalization envs are `APP_SUBTITLE`, `HOME_WELCOME_TITLE`, `HOME_WELCOME_BODY`, `HOME_ACCESS_TITLE`, `HOME_ACCESS_BODY`, `BOARD_EMPTY_TITLE`, `BOARD_EMPTY_BODY`, `ADMIN_INTRO_TITLE`, and `ADMIN_INTRO_BODY`.
 - Optional envs are `PORT` and `DATA_DIR`; defaults are `8080` and `data`.
 

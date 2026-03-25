@@ -3,6 +3,15 @@ const boardShell = document.querySelector(".shell-board");
 if (boardShell) {
   const boardGrid = document.getElementById("boardGrid");
   const boardCount = document.getElementById("boardCount");
+  const displayTimeZone = boardGrid.dataset.timezone || "UTC";
+  const boardTimeFormatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: displayTimeZone,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZoneName: "short",
+  });
 
   function updateBoardCount() {
     const total = boardGrid.querySelectorAll(".photo-card:not(.photo-card-empty)").length;
@@ -19,7 +28,7 @@ if (boardShell) {
       <img src="${photo.display_url}" alt="${photo.caption || ""}">
       <div class="photo-meta">
         <strong class="photo-caption">${photo.caption || ""}</strong>
-        <span>${new Date(photo.created_at).toLocaleTimeString()}</span>
+        <span>${boardTimeFormatter.format(new Date(photo.created_at))}</span>
       </div>
     `;
     return card;
