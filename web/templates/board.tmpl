@@ -5,11 +5,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ .Title }}</title>
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v=20260325a">
 </head>
 <body>
-<button class="menu-scrim" type="button" data-nav-scrim aria-label="Close menu"></button>
-<aside class="side-menu" aria-label="Site menu">
+<button class="menu-scrim" type="button" data-nav-scrim aria-label="close menu"></button>
+<aside class="side-menu" aria-label="site menu">
   <div class="side-menu-head">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
@@ -18,17 +18,17 @@
         <span>shared booth</span>
       </div>
     </div>
-    <button type="button" data-nav-close>Close</button>
+    <button type="button" data-nav-close>close</button>
   </div>
   <div class="side-menu-links">
-    <a class="nav-link" href="/">Home</a>
-    <a class="nav-link nav-link-active" href="{{ .BoardURL }}">Photo wall</a>
-    <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
+    <a class="nav-link" href="/">home</a>
+    <a class="nav-link nav-link-active" href="{{ .BoardURL }}">photo wall</a>
+    <a class="nav-link" href="{{ .CaptureURL }}">take a photo</a>
   </div>
 </aside>
 
 <main class="shell shell-board">
-  <nav class="site-nav" aria-label="Primary">
+  <nav class="site-nav" aria-label="primary">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
@@ -36,7 +36,7 @@
         <span>live photo wall</span>
       </div>
     </div>
-    <button class="nav-toggle" type="button" data-nav-open>Menu</button>
+    <button class="nav-toggle" type="button" data-nav-open>menu</button>
   </nav>
 
   <section class="board-shell">
@@ -68,8 +68,8 @@
   </section>
 </main>
 
-<script src="/static/js/nav.js" defer></script>
-<script src="/static/js/board.js" defer></script>
+<script src="/static/js/nav.js?v=20260325a" defer></script>
+<script src="/static/js/board.js?v=20260325a" defer></script>
 </body>
 </html>
 {{ end }}

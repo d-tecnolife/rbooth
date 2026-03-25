@@ -5,11 +5,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ .Title }}</title>
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v=20260325a">
 </head>
 <body>
-<button class="menu-scrim" type="button" data-nav-scrim aria-label="Close menu"></button>
-<aside class="side-menu" aria-label="Site menu">
+<button class="menu-scrim" type="button" data-nav-scrim aria-label="close menu"></button>
+<aside class="side-menu" aria-label="site menu">
   <div class="side-menu-head">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
@@ -18,17 +18,17 @@
         <span>shared booth</span>
       </div>
     </div>
-    <button type="button" data-nav-close>Close</button>
+    <button type="button" data-nav-close>close</button>
   </div>
   <div class="side-menu-links">
-    <a class="nav-link" href="/">Home</a>
-    <a class="nav-link" href="{{ .BoardURL }}">Photo wall</a>
-    <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
+    <a class="nav-link" href="/">home</a>
+    <a class="nav-link" href="{{ .BoardURL }}">photo wall</a>
+    <a class="nav-link" href="{{ .CaptureURL }}">take a photo</a>
   </div>
 </aside>
 
 <main class="shell shell-admin">
-  <nav class="site-nav" aria-label="Primary">
+  <nav class="site-nav" aria-label="primary">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
@@ -36,21 +36,21 @@
         <span>host tools</span>
       </div>
     </div>
-    <button class="nav-toggle" type="button" data-nav-open>Menu</button>
+    <button class="nav-toggle" type="button" data-nav-open>menu</button>
   </nav>
 
   <section class="compact-panel">
     <div class="compact-grid">
       <div>
-        <p class="eyebrow">Booth controls</p>
-        <h1 class="compact-title">Keep the board running.</h1>
-        <p class="compact-copy">Use this page for QR access, board links, and a quick status check while the photo wall stays on the main display.</p>
+        <p class="eyebrow">booth controls</p>
+        <h1 class="compact-title">keep the wall running.</h1>
+        <p class="compact-copy">use this page for qr access, wall links, and a quick status check while the photo wall stays on the main display.</p>
       </div>
       <div class="admin-actions">
-        <a class="button-link" href="{{ .AccessURL }}">Open camera page</a>
-        <a class="button-link" href="{{ .BoardURL }}">Open photo wall</a>
+        <a class="button-link" href="{{ .AccessURL }}">open camera page</a>
+        <a class="button-link" href="{{ .BoardURL }}">open photo wall</a>
         <form action="/admin/logout" method="post">
-          <button class="button-secondary" type="submit">Sign out</button>
+          <button class="button-secondary" type="submit">sign out</button>
         </form>
       </div>
     </div>
@@ -58,32 +58,32 @@
 
   <section class="admin-grid">
     <article class="card info-card">
-      <h2>QR and links</h2>
-      <img class="qr-image" src="/qr" alt="QR code for the shared board capture page">
+      <h2>qr and links</h2>
+      <img class="qr-image" src="/qr" alt="qr code for the shared board capture page">
       <label>
-        Capture URL
+        capture url
         <input type="text" value="{{ .AccessURL }}" readonly>
       </label>
       <label>
-        Board URL
+        board url
         <input type="text" value="{{ .BoardURL }}" readonly>
       </label>
     </article>
 
     <article class="card info-card">
-      <h2>Quick snapshot</h2>
+      <h2>quick snapshot</h2>
       <div class="admin-facts">
-        <p><strong>Started:</strong> {{ .Event.CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
-        <p><strong>Photos on wall:</strong> <span id="adminPhotoCount">{{ len .Photos }}</span></p>
-        <p><strong>Guest flow:</strong> Scan, snap, style, publish.</p>
-        <p><strong>Display tip:</strong> Keep the board on the biggest screen in the room.</p>
+        <p><strong>started:</strong> {{ .Event.CreatedAt.Format "2006-01-02 15:04 UTC" }}</p>
+        <p><strong>photos on wall:</strong> <span id="adminPhotoCount">{{ len .Photos }}</span></p>
+        <p><strong>guest flow:</strong> scan, snap, style, publish.</p>
+        <p><strong>display tip:</strong> keep the wall on the biggest screen in the room.</p>
       </div>
     </article>
   </section>
 
   <section class="gallery-strip">
     <div class="section-head">
-      <h2>Latest uploads</h2>
+      <h2>latest uploads</h2>
     </div>
     <div class="grid cards">
       {{ range .Photos }}
@@ -93,19 +93,19 @@
           <p class="thumb-caption">{{ .Caption }}</p>
           <p class="thumb-file">{{ .Filename }}</p>
         </div>
-        <button class="button-link danger-button" type="button" data-delete-photo="{{ .ID }}">Delete {{ .ID }}</button>
+        <button class="button-link danger-button" type="button" data-delete-photo="{{ .ID }}">delete {{ .ID }}</button>
       </article>
       {{ else }}
       <article id="adminEmptyState" class="card empty">
-        <p>No photos yet. Open the camera page on a phone and publish one.</p>
+        <p>no photos yet. open the camera page on a phone and publish one.</p>
       </article>
       {{ end }}
     </div>
   </section>
 </main>
 
-<script src="/static/js/nav.js" defer></script>
-<script src="/static/js/admin.js" defer></script>
+<script src="/static/js/nav.js?v=20260325a" defer></script>
+<script src="/static/js/admin.js?v=20260325a" defer></script>
 </body>
 </html>
 {{ end }}

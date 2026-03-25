@@ -225,7 +225,7 @@ func (a *App) handleCapture(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:      "Capture a photo | " + a.appName,
+		Title:      "capture a photo | " + a.appName,
 		BaseURL:    a.baseURL,
 		Event:      event,
 		CaptureURL: a.captureURL(),
@@ -239,7 +239,7 @@ func (a *App) handleBoard(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:      "Photo wall | " + a.appName,
+		Title:      "photo wall | " + a.appName,
 		BaseURL:    a.baseURL,
 		Event:      event,
 		CaptureURL: a.captureURL(),
@@ -254,7 +254,7 @@ func (a *App) handleAdmin(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
 
 	data := pageData{
-		Title:      "Admin | " + a.appName,
+		Title:      "admin | " + a.appName,
 		BaseURL:    a.baseURL,
 		Event:      event,
 		CaptureURL: a.captureURL(),
@@ -453,7 +453,7 @@ func (a *App) handleStream(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	data := pageData{
-		Title:      "Page Not Found | " + a.appName,
+		Title:      "page not found | " + a.appName,
 		BaseURL:    a.baseURL,
 		CaptureURL: a.captureURL(),
 		BoardURL:   a.boardURL(),
@@ -671,6 +671,7 @@ func (a *App) loadState() error {
 		a.events[event.Code] = &copyEvent
 	}
 	for _, photo := range state.Photos {
+		photo.Caption = stripCaptionIDPrefix(photo.Caption)
 		if photo.StorageKey == "" && photo.EventCode != "" && photo.Filename != "" {
 			photo.StorageKey = photo.EventCode + "/" + photo.Filename
 		}
@@ -1005,6 +1006,22 @@ func formatPhotoCaption(id, caption string) string {
 		return ""
 	}
 	return caption
+}
+
+func stripCaptionIDPrefix(caption string) string {
+	caption = strings.TrimSpace(caption)
+	if !strings.HasPrefix(caption, "#") {
+		return caption
+	}
+
+	index := 1
+	for index < len(caption) && caption[index] >= '0' && caption[index] <= '9' {
+		index++
+	}
+	if index == 1 || index+1 >= len(caption) || caption[index] != '.' || caption[index+1] != ' ' {
+		return caption
+	}
+	return strings.TrimSpace(caption[index+2:])
 }
 
 func buildPhotoFilename(id, caption string) string {

@@ -5,11 +5,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ .Title }}</title>
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v=20260325a">
 </head>
 <body class="capture-page" data-app-name="{{ .AppName }}">
-<button class="menu-scrim" type="button" data-nav-scrim aria-label="Close menu"></button>
-<aside class="side-menu" aria-label="Site menu">
+<button class="menu-scrim" type="button" data-nav-scrim aria-label="close menu"></button>
+<aside class="side-menu" aria-label="site menu">
   <div class="side-menu-head">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
@@ -18,17 +18,17 @@
         <span>shared booth</span>
       </div>
     </div>
-    <button type="button" data-nav-close>Close</button>
+    <button type="button" data-nav-close>close</button>
   </div>
   <div class="side-menu-links">
-    <a class="nav-link" href="/">Home</a>
-    <a class="nav-link" href="{{ .BoardURL }}">Photo wall</a>
-    <a class="nav-link nav-link-active" href="{{ .CaptureURL }}">Take a photo</a>
+    <a class="nav-link" href="/">home</a>
+    <a class="nav-link" href="{{ .BoardURL }}">photo wall</a>
+    <a class="nav-link nav-link-active" href="{{ .CaptureURL }}">take a photo</a>
   </div>
 </aside>
 
 <main class="shell shell-capture">
-  <nav class="site-nav" aria-label="Primary">
+  <nav class="site-nav" aria-label="primary">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
@@ -36,25 +36,25 @@
         <span>take a photo</span>
       </div>
     </div>
-    <button class="nav-toggle" type="button" data-nav-open>Menu</button>
+    <button class="nav-toggle" type="button" data-nav-open>menu</button>
   </nav>
 
   <section class="capture-editor" data-capture-editor>
     <div class="capture-surface">
       <div class="capture-overlay-actions">
-        <button id="pickPhoto" class="capture-icon-button capture-fab" type="button" aria-label="Capture or choose a photo">
+        <button id="pickPhoto" class="capture-icon-button capture-fab" type="button" aria-label="capture or choose a photo">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M8.2 5.5 9.5 4h5l1.3 1.5H19A2.5 2.5 0 0 1 21.5 8v8A2.5 2.5 0 0 1 19 18.5H5A2.5 2.5 0 0 1 2.5 16V8A2.5 2.5 0 0 1 5 5.5h3.2Zm3.8 2.8A4.8 4.8 0 1 0 12 18a4.8 4.8 0 0 0 0-9.7Zm0 2A2.8 2.8 0 1 1 12 16a2.8 2.8 0 0 1 0-5.7Z"/>
           </svg>
         </button>
         <input id="photoInput" type="file" accept=".heic,.heif,.jpg,.jpeg,.png,.webp,.gif,image/heic,image/heif,image/jpeg,image/png,image/webp,image/gif" hidden>
 
-        <button id="toggleEditor" class="drawer-toggle" type="button" aria-expanded="false" aria-controls="uploadForm" aria-label="Open edit controls">
+        <button id="toggleEditor" class="drawer-toggle" type="button" aria-expanded="false" aria-controls="uploadForm" aria-label="open edit controls">
           <span class="drawer-toggle-closed">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 7h10v2H4V7Zm0 8h16v2H4v-2Zm6-4h10v2H10v-2Z"/>
             </svg>
-            <span>Edit</span>
+            <span>edit</span>
           </span>
           <span class="drawer-toggle-open" aria-hidden="true">
             <svg viewBox="0 0 24 24">
@@ -66,7 +66,7 @@
 
       <div class="capture-stage">
         <div class="camera-stack capture-preview-stack">
-          <button id="previewPlaceholder" class="preview-placeholder" type="button" aria-label="Capture or choose a photo">
+          <button id="previewPlaceholder" class="preview-placeholder" type="button" aria-label="capture or choose a photo">
             <span class="preview-placeholder-badge">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M8.2 5.5 9.5 4h5l1.3 1.5H19A2.5 2.5 0 0 1 21.5 8v8A2.5 2.5 0 0 1 19 18.5H5A2.5 2.5 0 0 1 2.5 16V8A2.5 2.5 0 0 1 5 5.5h3.2Zm3.8 2.8A4.8 4.8 0 1 0 12 18a4.8 4.8 0 0 0 0-9.7Zm0 2A2.8 2.8 0 1 1 12 16a2.8 2.8 0 0 1 0-5.7Z"/>
@@ -77,76 +77,76 @@
           <div id="previewFrame" class="preview-frame" hidden></div>
           <div id="segmentationOverlay" class="processing-overlay" hidden>
             <div class="processing-overlay-card">
-              <strong>Removing background…</strong>
-              <span>This can take a moment.</span>
+              <strong>removing background…</strong>
+              <span>this can take a moment.</span>
             </div>
           </div>
         </div>
       </div>
 
       <div class="capture-status">
-        <p id="statusMessage" class="status">Tap the camera icon to begin.</p>
+        <p id="statusMessage" class="status">tap the camera icon to begin.</p>
       </div>
     </div>
 
     <form id="uploadForm" class="editor-drawer" data-editor-drawer>
       <div class="editor-drawer-head">
         <div class="controls-head">
-          <h2>Edit</h2>
+          <h2>edit</h2>
         </div>
       </div>
 
       <section class="control-group">
-        <h3>Caption</h3>
+        <h3>caption</h3>
         <label>
-          Photo caption
-          <input type="text" name="caption" maxlength="60" placeholder="Optional caption">
+          photo caption
+          <input type="text" name="caption" maxlength="60" placeholder="optional caption">
         </label>
       </section>
 
       <section class="control-group">
-        <h3>Background</h3>
+        <h3>background</h3>
         <label>
-          Background style
+          background style
           <select name="backdrop">
-            <option value="none">No background</option>
-            <option value="sunrise">Sunrise</option>
-            <option value="mint">Mint</option>
-            <option value="night">Night</option>
-            <option value="paper">Paper</option>
-            <option value="studio">Studio</option>
+            <option value="none">no background</option>
+            <option value="sunrise">sunrise</option>
+            <option value="mint">mint</option>
+            <option value="night">night</option>
+            <option value="paper">paper</option>
+            <option value="studio">studio</option>
           </select>
         </label>
       </section>
 
       <section class="control-group">
-        <h3>Look</h3>
+        <h3>look</h3>
         <label>
-          Tone
+          tone
           <select name="tone">
-            <option value="neutral">Neutral</option>
-            <option value="warm">Warm</option>
-            <option value="cool">Cool</option>
-            <option value="party">Party</option>
+            <option value="neutral">neutral</option>
+            <option value="warm">warm</option>
+            <option value="cool">cool</option>
+            <option value="party">party</option>
           </select>
         </label>
 
         <label>
-          Frame
+          frame
           <select name="frame">
-            <option value="none">None</option>
-            <option value="classic">Classic border</option>
-            <option value="polaroid">Polaroid</option>
-            <option value="sparkle">Sparkle</option>
-            <option value="ticket">Ticket</option>
+            <option value="none">none</option>
+            <option value="classic">classic border</option>
+            <option value="polaroid">polaroid</option>
+            <option value="sparkle">sparkle</option>
+            <option value="ticket">ticket</option>
           </select>
         </label>
       </section>
 
       <section class="control-group">
-        <h3>Adjustments</h3>
+        <h3>adjustments</h3>
         <label>
-          Brightness
+          brightness
           <div class="slider-row">
             <input type="range" name="brightness" min="40" max="180" value="100">
             <output data-slider-value="brightness">100%</output>
@@ -154,7 +154,7 @@
         </label>
 
         <label>
-          Contrast
+          contrast
           <div class="slider-row">
             <input type="range" name="contrast" min="40" max="180" value="100">
             <output data-slider-value="contrast">100%</output>
@@ -162,7 +162,7 @@
         </label>
 
         <label>
-          Saturation
+          saturation
           <div class="slider-row">
             <input type="range" name="saturation" min="0" max="220" value="100">
             <output data-slider-value="saturation">100%</output>
@@ -170,7 +170,7 @@
         </label>
 
         <label>
-          Grayscale
+          grayscale
           <div class="slider-row">
             <input type="range" name="grayscale" min="0" max="100" value="0">
             <output data-slider-value="grayscale">0%</output>
@@ -181,14 +181,14 @@
     </form>
 
     <div class="capture-submit-bar">
-      <button id="resetEditor" type="button" class="button-secondary">Reset</button>
-      <button id="publishPhoto" type="submit" form="uploadForm" disabled>Pin to board</button>
+      <button id="resetEditor" type="button" class="button-secondary">reset</button>
+      <button id="publishPhoto" type="submit" form="uploadForm" disabled>pin to wall</button>
     </div>
   </section>
 </main>
 
-<script src="/static/js/nav.js" defer></script>
-<script src="/static/js/capture.js" defer></script>
+<script src="/static/js/nav.js?v=20260325a" defer></script>
+<script src="/static/js/capture.js?v=20260325a" defer></script>
 </body>
 </html>
 {{ end }}

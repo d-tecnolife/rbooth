@@ -5,28 +5,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ .Title }}</title>
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v=20260325a">
 </head>
 <body>
 <main class="shell shell-admin">
   <section class="compact-panel auth-panel">
     <div class="notfound-panel auth-shell">
       <div class="notfound-copy">
-        <p class="eyebrow">Admin access</p>
-        <h1 class="compact-title">Sign in to manage the booth.</h1>
-        <p class="compact-copy">Only authenticated admins can view the QR code, open host tools, or delete photos.</p>
+        <p class="eyebrow">admin access</p>
+        <h1 class="compact-title">sign in to manage the booth.</h1>
+        <p class="compact-copy">only authenticated admins can view the qr code, open host tools, or delete photos.</p>
       </div>
 
       <form class="auth-form" action="/admin/login" method="post">
         <input type="hidden" name="next" value="{{ .Next }}">
         <label>
-          Admin password
+          admin password
           <input type="password" name="password" autocomplete="current-password" required>
         </label>
         {{ if .AuthError }}
         <p class="auth-error">{{ .AuthError }}</p>
         {{ end }}
-        <button type="submit">Sign in</button>
+        <button type="submit">sign in</button>
       </form>
     </div>
   </section>

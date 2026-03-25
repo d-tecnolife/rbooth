@@ -5,11 +5,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ .Title }}</title>
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v=20260325a">
 </head>
 <body>
-<button class="menu-scrim" type="button" data-nav-scrim aria-label="Close menu"></button>
-<aside class="side-menu" aria-label="Site menu">
+<button class="menu-scrim" type="button" data-nav-scrim aria-label="close menu"></button>
+<aside class="side-menu" aria-label="site menu">
   <div class="side-menu-head">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
@@ -18,17 +18,17 @@
         <span>shared booth</span>
       </div>
     </div>
-    <button type="button" data-nav-close>Close</button>
+    <button type="button" data-nav-close>close</button>
   </div>
   <div class="side-menu-links">
-    <a class="nav-link" href="/">Home</a>
-    <a class="nav-link" href="{{ .BoardURL }}">Photo wall</a>
-    <a class="nav-link" href="{{ .CaptureURL }}">Take a photo</a>
+    <a class="nav-link" href="/">home</a>
+    <a class="nav-link" href="{{ .BoardURL }}">photo wall</a>
+    <a class="nav-link" href="{{ .CaptureURL }}">take a photo</a>
   </div>
 </aside>
 
 <main class="shell shell-board">
-  <nav class="site-nav" aria-label="Primary">
+  <nav class="site-nav" aria-label="primary">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
@@ -36,7 +36,7 @@
         <span>live photo wall</span>
       </div>
     </div>
-    <button class="nav-toggle" type="button" data-nav-open>Menu</button>
+    <button class="nav-toggle" type="button" data-nav-open>menu</button>
   </nav>
 
   <section class="board-shell">
@@ -44,34 +44,34 @@
       <section class="compact-panel notfound-panel">
         <div class="notfound-copy">
           <p class="eyebrow">404</p>
-          <h1 class="compact-title">This page is not on the wall.</h1>
-          <p class="compact-copy">The link you opened does not exist here. You can jump back to the photo board or head straight to the capture page.</p>
+          <h1 class="compact-title">this page is not on the wall.</h1>
+          <p class="compact-copy">the link you opened does not exist here. you can jump back to the photo wall or head straight to the capture page.</p>
         </div>
         <div class="board-links notfound-actions">
-          <a href="{{ .BoardURL }}">Go to photo board</a>
-          <a href="{{ .CaptureURL }}">Open capture page</a>
+          <a href="{{ .BoardURL }}">go to photo wall</a>
+          <a href="{{ .CaptureURL }}">open capture page</a>
         </div>
       </section>
     </div>
 
     <aside class="board-rail">
       <div>
-        <p class="eyebrow">Private access</p>
-        <h2>Use the booth QR code to enter.</h2>
-        <p class="compact-copy">Only the host tools page exposes the signed QR code.</p>
+        <p class="eyebrow">private access</p>
+        <h2>use the booth qr code to enter.</h2>
+        <p class="compact-copy">only the host tools page exposes the signed qr code.</p>
       </div>
       <div class="board-note">
-        <h2>Need to add a photo?</h2>
-        <p>Go back to the capture page from the shared booth flow, take a photo, then publish it straight onto the wall.</p>
+        <h2>need to add a photo?</h2>
+        <p>go back to the capture page from the shared booth flow, take a photo, then publish it straight onto the wall.</p>
       </div>
       <div class="board-links">
-        <a href="{{ .CaptureURL }}">Open camera page</a>
+        <a href="{{ .CaptureURL }}">open camera page</a>
       </div>
     </aside>
   </section>
 </main>
 
-<script src="/static/js/nav.js" defer></script>
+<script src="/static/js/nav.js?v=20260325a" defer></script>
 </body>
 </html>
 {{ end }}

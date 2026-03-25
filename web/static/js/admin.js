@@ -20,18 +20,18 @@ if (cardsGrid) {
     const empty = document.createElement("article");
     empty.id = "adminEmptyState";
     empty.className = "card empty";
-    empty.innerHTML = "<p>No photos yet. Open the camera page on a phone and publish one.</p>";
+    empty.innerHTML = "<p>no photos yet. open the camera page on a phone and publish one.</p>";
     cardsGrid.append(empty);
   }
 
   async function deletePhoto(id, button) {
     button.disabled = true;
-    button.textContent = `Deleting ${id}...`;
+    button.textContent = `deleting ${id}...`;
 
     try {
       const response = await fetch(`/api/photos/${encodeURIComponent(id)}`, { method: "DELETE" });
       if (!response.ok) {
-        throw new Error(`Delete failed with status ${response.status}`);
+        throw new Error(`delete failed with status ${response.status}`);
       }
 
       const card = cardsGrid.querySelector(`[data-photo-id="${CSS.escape(id)}"]`);
@@ -43,8 +43,8 @@ if (cardsGrid) {
     } catch (error) {
       console.error(error);
       button.disabled = false;
-      button.textContent = `Delete ${id}`;
-      window.alert(`Failed to delete photo ${id}.`);
+      button.textContent = `delete ${id}`;
+      window.alert(`failed to delete photo ${id}.`);
     }
   }
 
@@ -58,7 +58,7 @@ if (cardsGrid) {
     if (!id) {
       return;
     }
-    if (!window.confirm(`Delete photo #${id}?`)) {
+    if (!window.confirm(`delete photo #${id}?`)) {
       return;
     }
 
