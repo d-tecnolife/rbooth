@@ -141,7 +141,7 @@ label {
 }
 
 .shell-board {
-  width: min(1480px, calc(100vw - 2rem));
+  width: min(1720px, calc(100vw - 2rem));
 }
 
 .site-nav {
@@ -158,6 +158,7 @@ label {
   border-radius: 0.75rem;
   background: rgba(255, 251, 253, 0.94);
   box-shadow: var(--shadow-md);
+  text-transform: lowercase;
 }
 
 .brand-block {
@@ -199,6 +200,7 @@ label {
 
 .nav-toggle {
   min-width: 6rem;
+  text-transform: lowercase;
 }
 
 .side-menu {
@@ -217,6 +219,7 @@ label {
   box-shadow: none;
   transform: translateX(104%);
   transition: transform 220ms ease;
+  text-transform: lowercase;
 }
 
 body.menu-open .side-menu {
@@ -1026,11 +1029,13 @@ body.menu-open .menu-scrim {
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
+  width: 100%;
 }
 
 .board-main {
   display: grid;
   gap: 1rem;
+  width: 100%;
 }
 
 .board-topbar {
@@ -1059,6 +1064,7 @@ body.menu-open .menu-scrim {
 
 .pinboard-frame {
   position: relative;
+  width: 100%;
   padding: 1.5rem 1.2rem 1.8rem;
   border-radius: 1rem;
   background: linear-gradient(180deg, #f3bfd6 0%, #e8a7c4 100%);
@@ -1214,6 +1220,14 @@ label,
 
 .photo-caption,
 .thumb-caption {
+  text-transform: none;
+}
+
+.photo-meta span,
+.thumb-file,
+input,
+select,
+textarea {
   text-transform: none;
 }
 

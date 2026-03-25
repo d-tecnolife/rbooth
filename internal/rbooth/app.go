@@ -1004,7 +1004,7 @@ func formatPhotoCaption(id, caption string) string {
 	if caption == "" {
 		return ""
 	}
-	return "#" + id + ". " + caption
+	return caption
 }
 
 func buildPhotoFilename(id, caption string) string {
