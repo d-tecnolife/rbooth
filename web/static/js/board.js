@@ -38,13 +38,17 @@ if (boardShell) {
     if (boardGrid.querySelector(".photo-card")) {
       return;
     }
+    const emptyTitle = boardGrid.dataset.emptyTitle || "the wall is ready";
+    const emptyBody =
+      boardGrid.dataset.emptyBody ||
+      "new snapshots will pin themselves here and stack into the collage live.";
 
     const card = document.createElement("article");
     card.className = "photo-card photo-card-empty";
     card.innerHTML = `
       <div class="photo-meta">
-        <strong>the wall is ready</strong>
-        <span>new snapshots will pin themselves here and stack into the collage live.</span>
+        <strong>${emptyTitle}</strong>
+        <span>${emptyBody}</span>
       </div>
     `;
     boardGrid.append(card);

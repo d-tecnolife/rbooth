@@ -15,7 +15,7 @@
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
         <strong>{{ .AppName }}</strong>
-        <span>shared booth</span>
+        <span>{{ .Personalization.AppSubtitle }}</span>
       </div>
     </div>
     <button type="button" data-nav-close>close</button>
@@ -45,7 +45,7 @@
         <div class="pinboard-header">
           <span id="boardCount">{{ len .Photos }} photos pinned on the wall</span>
         </div>
-        <div id="boardGrid" class="board-grid">
+        <div id="boardGrid" class="board-grid" data-empty-title="{{ .Personalization.BoardEmptyTitle }}" data-empty-body="{{ .Personalization.BoardEmptyBody }}">
         {{ range .Photos }}
         <article class="photo-card" data-photo-id="{{ .ID }}">
           <img src="{{ .DisplayURL }}" alt="{{ .Caption }}">
@@ -57,8 +57,8 @@
         {{ else }}
         <article class="photo-card photo-card-empty">
           <div class="photo-meta">
-            <strong>the wall is ready</strong>
-            <span>new snapshots will pin themselves here and stack into the collage live.</span>
+            <strong>{{ .Personalization.BoardEmptyTitle }}</strong>
+            <span>{{ .Personalization.BoardEmptyBody }}</span>
           </div>
         </article>
         {{ end }}

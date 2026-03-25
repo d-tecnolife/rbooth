@@ -3,6 +3,11 @@ const shell = document.querySelector(".shell-capture");
 if (shell) {
   const appName = String(document.body?.dataset.appName || "rbooth").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const DRAFT_STORAGE_KEY = `${appName || "rbooth"}:capture-draft`;
+  const captureAssetsNode = document.getElementById("captureAssetsData");
+  const captureAssets = captureAssetsNode
+    ? JSON.parse(captureAssetsNode.textContent || '{"backdrops":{},"frames":{}}')
+    : { backdrops: {}, frames: {} };
+  const assetImageCache = new Map();
   const captureEditor = document.querySelector("[data-capture-editor]");
   const toggleEditorButton = document.getElementById("toggleEditor");
   const preview = document.getElementById("preview");
@@ -98,6 +103,28 @@ if (shell) {
     };
   }
 
+  function selectedAssetURL(kind, value) {
+    return String(captureAssets?.[kind]?.[value] || "");
+  }
+
+  function loadAssetImage(url) {
+    if (!url) {
+      return Promise.resolve(null);
+    }
+    if (assetImageCache.has(url)) {
+      return assetImageCache.get(url);
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error(`failed to load asset ${url}`));
+      image.src = url;
+    });
+    assetImageCache.set(url, promise);
+    return promise;
+  }
+
   function updateSliderValues() {
     const settings = getSettings();
     sliderOutputs.get("brightness").textContent = `${settings.brightness}%`;
@@ -110,6 +137,11 @@ if (shell) {
     switch (backdrop) {
       case "none":
         return null;
+      case "sunrise":
+        return {
+          colors: ["#f97316", "#fb7185"],
+          accent: "rgba(255, 244, 251, 0.22)",
+        };
       case "mint":
         return {
           colors: ["#d8f3dc", "#95d5b2"],
@@ -131,10 +163,7 @@ if (shell) {
           accent: "rgba(236, 72, 153, 0.14)",
         };
       default:
-        return {
-          colors: ["#f97316", "#fb7185"],
-          accent: "rgba(255, 244, 251, 0.22)",
-        };
+        return null;
     }
   }
 
@@ -453,13 +482,15 @@ if (shell) {
     previewContext.restore();
   }
 
-  function drawPreview() {
+  async function drawPreview() {
     if (!state.sourceImage) {
       syncPreviewPlaceholder();
       return;
     }
 
     const settings = getSettings();
+    const backdropAssetURL = selectedAssetURL("backdrops", settings.backdrop);
+    const frameAssetURL = selectedAssetURL("frames", settings.frame);
     const palette = backgroundPalette(settings.backdrop);
     const overlay = toneOverlay(settings.tone);
     const useBackgroundReplacement = settings.backdrop !== "none";
@@ -472,8 +503,20 @@ if (shell) {
     preview.height = baseHeight;
     preview.parentElement.style.setProperty("--preview-aspect", `${baseWidth} / ${baseHeight}`);
     previewContext.clearRect(0, 0, baseWidth, baseHeight);
-    if (palette && !waitingForSegmentation) {
-      drawBackdrop(baseWidth, baseHeight, palette);
+    if (!waitingForSegmentation) {
+      if (backdropAssetURL) {
+        try {
+          const backdropImage = await loadAssetImage(backdropAssetURL);
+          if (backdropImage) {
+            previewContext.drawImage(backdropImage, 0, 0, baseWidth, baseHeight);
+          }
+        } catch (error) {
+          console.error(error);
+          setStatus("could not load the selected background asset.");
+        }
+      } else if (palette) {
+        drawBackdrop(baseWidth, baseHeight, palette);
+      }
     }
 
     const outerPadX = palette && !waitingForSegmentation ? Math.round(baseWidth * 0.018) : 0;
@@ -530,7 +573,19 @@ if (shell) {
       previewContext.fillRect(photoX, photoY, photoWidth, photoHeight);
     }
     previewContext.restore();
-    drawFrameDecor(settings.frame, offsetX, offsetY, drawWidth, drawHeight);
+    if (frameAssetURL) {
+      try {
+        const frameImage = await loadAssetImage(frameAssetURL);
+        if (frameImage) {
+          previewContext.drawImage(frameImage, 0, 0, baseWidth, baseHeight);
+        }
+      } catch (error) {
+        console.error(error);
+        setStatus("could not load the selected frame asset.");
+      }
+    } else {
+      drawFrameDecor(settings.frame, offsetX, offsetY, drawWidth, drawHeight);
+    }
 
     syncPreviewPlaceholder();
     syncSegmentationOverlay();

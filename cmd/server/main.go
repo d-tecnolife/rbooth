@@ -18,10 +18,21 @@ func main() {
 	authSecret := envOr("AUTH_SECRET", "")
 
 	app, err := rbooth.New(rbooth.Config{
-		AppName:       appName,
-		BaseURL:       baseURL,
-		DataDir:       dataDir,
-		StorageDir:    storageDir,
+		AppName:    appName,
+		BaseURL:    baseURL,
+		DataDir:    dataDir,
+		StorageDir: storageDir,
+		Personalization: rbooth.Personalization{
+			AppSubtitle:      os.Getenv("APP_SUBTITLE"),
+			HomeWelcomeTitle: os.Getenv("HOME_WELCOME_TITLE"),
+			HomeWelcomeBody:  os.Getenv("HOME_WELCOME_BODY"),
+			HomeAccessTitle:  os.Getenv("HOME_ACCESS_TITLE"),
+			HomeAccessBody:   os.Getenv("HOME_ACCESS_BODY"),
+			BoardEmptyTitle:  os.Getenv("BOARD_EMPTY_TITLE"),
+			BoardEmptyBody:   os.Getenv("BOARD_EMPTY_BODY"),
+			AdminIntroTitle:  os.Getenv("ADMIN_INTRO_TITLE"),
+			AdminIntroBody:   os.Getenv("ADMIN_INTRO_BODY"),
+		},
 		AdminPassword: adminPassword,
 		AuthSecret:    authSecret,
 	})

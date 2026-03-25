@@ -15,7 +15,7 @@
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
         <strong>{{ .AppName }}</strong>
-        <span>shared booth</span>
+        <span>{{ .Personalization.AppSubtitle }}</span>
       </div>
     </div>
     <button type="button" data-nav-close>close</button>
@@ -33,7 +33,7 @@
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
         <strong>{{ .AppName }}</strong>
-        <span>photo booth</span>
+        <span>{{ .Personalization.AppSubtitle }}</span>
       </div>
     </div>
     <button class="nav-toggle" type="button" data-nav-open>menu</button>
@@ -43,8 +43,8 @@
     <div class="notfound-panel">
       <div class="notfound-copy">
         <p class="eyebrow">welcome</p>
-        <h1 class="compact-title">placeholder welcome message.</h1>
-        <p class="compact-copy">this is where the custom welcome message will go.</p>
+        <h1 class="compact-title">{{ .Personalization.HomeWelcomeTitle }}</h1>
+        <p class="compact-copy">{{ .Personalization.HomeWelcomeBody }}</p>
       </div>
     </div>
   </section>
@@ -53,15 +53,16 @@
     <div class="board-rail">
       <div>
         <p class="eyebrow">private access</p>
-        <h2>use the booth qr code to enter.</h2>
-        <p class="compact-copy">the capture and board pages only open after the signed qr link sets your access cookie.</p>
+        <h2>{{ .Personalization.HomeAccessTitle }}</h2>
+        <p class="compact-copy">{{ .Personalization.HomeAccessBody }}</p>
       </div>
       <div class="board-note">
         <h2>how to pin a photo</h2>
-        <p>1. scan the qr code on the booth display.</p>
-        <p>2. open the capture page on your phone.</p>
+        <p>1. scan the qr code with your phone.</p>
+        <p>2. the capture page opens on your phone.</p>
         <p>3. take or upload a photo.</p>
-        <p>4. pin it to the wall.</p>
+        <p>4. make any edits like setting a caption, setting a frame, or setting a background.</p>
+        <p>5. pin it to the wall.</p>
       </div>
     </div>
   </section>

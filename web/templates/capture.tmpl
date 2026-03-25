@@ -15,7 +15,7 @@
       <div class="brand-mark" aria-hidden="true">&#9829;</div>
       <div class="brand-copy">
         <strong>{{ .AppName }}</strong>
-        <span>shared booth</span>
+        <span>{{ .Personalization.AppSubtitle }}</span>
       </div>
     </div>
     <button type="button" data-nav-close>close</button>
@@ -109,12 +109,9 @@
         <label>
           background style
           <select name="backdrop">
-            <option value="none">no background</option>
-            <option value="sunrise">sunrise</option>
-            <option value="mint">mint</option>
-            <option value="night">night</option>
-            <option value="paper">paper</option>
-            <option value="studio">studio</option>
+            {{ range .BackdropOptions }}
+            <option value="{{ .Value }}">{{ .Label }}</option>
+            {{ end }}
           </select>
         </label>
       </section>
@@ -134,11 +131,9 @@
         <label>
           frame
           <select name="frame">
-            <option value="none">none</option>
-            <option value="classic">classic border</option>
-            <option value="polaroid">polaroid</option>
-            <option value="sparkle">sparkle</option>
-            <option value="ticket">ticket</option>
+            {{ range .FrameOptions }}
+            <option value="{{ .Value }}">{{ .Label }}</option>
+            {{ end }}
           </select>
         </label>
       </section>
@@ -187,6 +182,7 @@
   </section>
 </main>
 
+<script id="captureAssetsData" type="application/json">{{ .CaptureAssetsJSON }}</script>
 <script src="/static/js/nav.js?v=20260325a" defer></script>
 <script src="/static/js/capture.js?v=20260325a" defer></script>
 </body>

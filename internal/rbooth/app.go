@@ -30,25 +30,27 @@ import (
 )
 
 type Config struct {
-	AppName       string
-	BaseURL       string
-	DataDir       string
-	StorageDir    string
-	AdminPassword string
-	AuthSecret    string
+	AppName         string
+	BaseURL         string
+	DataDir         string
+	StorageDir      string
+	Personalization Personalization
+	AdminPassword   string
+	AuthSecret      string
 }
 
 const singleBoardCode = "main-board"
 const defaultStorageDir = "/app/media"
 
 type App struct {
-	baseURL   string
-	appName   string
-	appMark   string
-	dataDir   string
-	storePath string
-	storage   Storage
-	templates *template.Template
+	baseURL         string
+	appName         string
+	appMark         string
+	dataDir         string
+	storePath       string
+	storage         Storage
+	templates       *template.Template
+	personalization Personalization
 
 	adminPassword string
 	authSecret    []byte
@@ -90,19 +92,23 @@ type persistedState struct {
 }
 
 type pageData struct {
-	Title       string
-	AppName     string
-	AppMark     string
-	BaseURL     string
-	Event       *Event
-	Photos      []Photo
-	CaptureURL  string
-	AccessURL   string
-	BoardURL    string
-	AdminURL    string
-	DefaultCode string
-	AuthError   string
-	Next        string
+	Title             string
+	AppName           string
+	AppMark           string
+	BaseURL           string
+	Event             *Event
+	Photos            []Photo
+	BackdropOptions   []captureOption
+	FrameOptions      []captureOption
+	CaptureAssetsJSON string
+	Personalization   Personalization
+	CaptureURL        string
+	AccessURL         string
+	BoardURL          string
+	AdminURL          string
+	DefaultCode       string
+	AuthError         string
+	Next              string
 }
 
 type samplePhotoSpec struct {
@@ -139,19 +145,21 @@ func New(cfg Config) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse templates: %w", err)
 	}
+	cfg.Personalization = normalizePersonalization(cfg.AppName, cfg.Personalization)
 
 	app := &App{
-		baseURL:       strings.TrimRight(cfg.BaseURL, "/"),
-		appName:       cfg.AppName,
-		appMark:       appMark(cfg.AppName),
-		dataDir:       cfg.DataDir,
-		storePath:     filepath.Join(cfg.DataDir, "state.json"),
-		templates:     templates,
-		adminPassword: strings.TrimSpace(cfg.AdminPassword),
-		authSecret:    []byte(strings.TrimSpace(cfg.AuthSecret)),
-		events:        make(map[string]*Event),
-		photos:        make(map[string][]Photo),
-		clients:       make(map[string]map[chan streamEvent]struct{}),
+		baseURL:         strings.TrimRight(cfg.BaseURL, "/"),
+		appName:         cfg.AppName,
+		appMark:         appMark(cfg.AppName),
+		dataDir:         cfg.DataDir,
+		storePath:       filepath.Join(cfg.DataDir, "state.json"),
+		templates:       templates,
+		personalization: cfg.Personalization,
+		adminPassword:   strings.TrimSpace(cfg.AdminPassword),
+		authSecret:      []byte(strings.TrimSpace(cfg.AuthSecret)),
+		events:          make(map[string]*Event),
+		photos:          make(map[string][]Photo),
+		clients:         make(map[string]map[chan streamEvent]struct{}),
 	}
 
 	if err := os.MkdirAll(cfg.StorageDir, 0o755); err != nil {
@@ -223,14 +231,22 @@ func (a *App) handleHome(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleCapture(w http.ResponseWriter, r *http.Request) {
 	event := a.singleEvent()
+	catalog, err := loadCaptureAssetCatalog()
+	if err != nil {
+		log.Printf("failed to load capture asset catalog: %v", err)
+		catalog = defaultCaptureAssetCatalog()
+	}
 
 	data := pageData{
-		Title:      "capture a photo | " + a.appName,
-		BaseURL:    a.baseURL,
-		Event:      event,
-		CaptureURL: a.captureURL(),
-		BoardURL:   a.boardURL(),
-		AdminURL:   a.adminURL(),
+		Title:             "capture a photo | " + a.appName,
+		BaseURL:           a.baseURL,
+		Event:             event,
+		BackdropOptions:   catalog.Backdrops,
+		FrameOptions:      catalog.Frames,
+		CaptureAssetsJSON: catalog.JSON(),
+		CaptureURL:        a.captureURL(),
+		BoardURL:          a.boardURL(),
+		AdminURL:          a.adminURL(),
 	}
 	a.render(w, "capture", data)
 }
@@ -492,10 +508,12 @@ func (a *App) renderStatus(w http.ResponseWriter, status int, name string, data 
 	case pageData:
 		value.AppName = a.appName
 		value.AppMark = a.appMark
+		value.Personalization = a.personalization
 		data = value
 	case *pageData:
 		value.AppName = a.appName
 		value.AppMark = a.appMark
+		value.Personalization = a.personalization
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
